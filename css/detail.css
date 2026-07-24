@@ -1,0 +1,338 @@
+/* ============================================================
+ * detail.css — 상품 상세 페이지 전체 UI (Figma 시안 기준)
+ * 골라담기 UI(pick_option.css)와 함께 로드합니다.
+ *   로드 순서: detail.css → pick_option.css
+ * ============================================================ */
+:root {
+  --pg-primary: #ff6b00;
+  --pg-primary-soft: #fff4ec;
+  --pg-danger: #f03e3e;
+  --pg-danger-bg: #fdecec;
+  --pg-ink: #191919;
+  --pg-gray: #888;
+  --pg-gray-light: #b5b5b5;
+  --pg-line: #ececec;
+  --pg-bg-soft: #f5f5f5;
+  --pg-max: 1520px;
+  --pg-buybar-h: 76px;
+}
+
+/* ---------- 베이스 ---------- */
+html, body { margin: 0; padding: 0; }
+/* ★ 카페24 스킨에서는 detail.html 이 <body> 를 포함하지 않으므로
+ * (body 는 layout.html 소관) 래퍼 div 에 .pd-page 를 걸어도 되도록
+ * body 한정을 풀어 둡니다. 폰트·색은 하위로 상속됩니다. */
+.pd-page {
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  color: var(--pg-ink); background: #fff; line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+.pd-page *, .pd-page *::before, .pd-page *::after { box-sizing: border-box; }
+.pd-page a { color: inherit; text-decoration: none; }
+.pd-page button { font: inherit; cursor: pointer; background: none; border: 0; padding: 0; color: inherit; }
+.pd-page img { max-width: 100%; display: block; }
+.pd-page :focus-visible { outline: 2px solid var(--pg-primary); outline-offset: 2px; }
+
+/* ============================================================
+ * 상단 프로모션 바
+ * ============================================================ */
+.hd-promo {
+  background: #111; color: #fff; font-size: 14px;
+  position: relative; text-align: center; padding: 12px 44px;
+}
+.hd-promo a { display: inline-flex; align-items: center; gap: 4px; }
+.hd-promo em { font-style: normal; color: var(--pg-primary); font-weight: 700; }
+.hd-promo__arrow { font-size: 12px; opacity: .9; }
+.hd-promo__close {
+  position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  color: #fff; font-size: 18px; line-height: 1; padding: 4px;
+}
+
+/* ============================================================
+ * 헤더 (로고/검색/유틸)
+ * ============================================================ */
+.hd { border-bottom: 1px solid var(--pg-line); background: #fff; }
+.hd__inner {
+  max-width: var(--pg-max); margin: 0 auto; padding: 22px 32px 14px;
+  display: flex; align-items: center; gap: 32px;
+}
+.hd__logo { margin: 0; font-size: 30px; font-weight: 900; letter-spacing: -1px; flex: 0 0 auto; }
+.hd__search {
+  margin-left: auto; flex: 0 1 400px; display: flex; align-items: center; gap: 8px;
+  background: var(--pg-bg-soft); border-radius: 10px; padding: 0 16px; height: 46px;
+}
+.hd__search svg { flex: 0 0 auto; }
+.hd__search input {
+  flex: 1; border: 0; background: transparent; font-size: 14px; color: var(--pg-ink); min-width: 0;
+}
+.hd__search input::placeholder { color: var(--pg-gray-light); }
+.hd__search input:focus { outline: none; }
+.hd__utils { display: flex; gap: 22px; flex: 0 0 auto; }
+.hd__util {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-size: 12px; color: var(--pg-ink); position: relative;
+}
+.hd__util svg { width: 26px; height: 26px; }
+.hd__badge {
+  position: absolute; top: -4px; right: 2px;
+  min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px;
+  background: var(--pg-primary); color: #fff; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ---------- GNB ---------- */
+.gnb { max-width: var(--pg-max); margin: 0 auto; padding: 6px 32px 16px; display: flex; align-items: center; }
+.gnb__menu { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: 36px; font-size: 16px; font-weight: 600; }
+.gnb__menu a { display: inline-flex; align-items: center; gap: 8px; padding: 6px 0; }
+.gnb__menu .is-active a { color: var(--pg-primary); }
+.gnb__event {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 5px;
+  border: 1px solid #ffd7bd; color: var(--pg-primary); font-weight: 700; font-size: 14px;
+  border-radius: 20px; padding: 8px 16px; background: #fff;
+}
+
+/* ============================================================
+ * 본문 2컬럼 레이아웃
+ * ============================================================ */
+.pd { max-width: var(--pg-max); margin: 0 auto; padding: 40px 32px 120px; }
+.pd__inner { display: flex; gap: 56px; align-items: flex-start; }
+.pd__left { flex: 1 1 auto; min-width: 0; }
+.pd__right { flex: 0 0 490px; position: sticky; top: 24px; }
+
+/* ---------- 갤러리 ---------- */
+.pd-gallery { position: relative; background: var(--pg-bg-soft); border-radius: 4px; overflow: hidden; }
+.pd-gallery img { width: 100%; height: auto; }
+.pd-gallery__pager {
+  position: absolute; right: 16px; bottom: 16px;
+  background: rgba(60,60,60,.75); color: #fff; font-size: 13px;
+  border-radius: 14px; padding: 4px 12px; letter-spacing: 1px;
+}
+.pd-gallery__pager em { font-style: normal; opacity: .6; }
+
+/* ---------- 탭 ---------- */
+.pd-tabs { display: flex; border-bottom: 1px solid var(--pg-line); margin-top: 4px; }
+.pd-tabs__tab {
+  flex: 1; text-align: center; padding: 18px 8px; font-size: 16px; font-weight: 600;
+  color: var(--pg-gray); border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+.pd-tabs__tab.is-active { color: var(--pg-primary); border-bottom-color: var(--pg-primary); }
+
+/* ---------- 상세 컨텐츠 ---------- */
+.pd-content { padding-top: 0; }
+.pd-content img { width: 100%; }
+.pd-content__section { scroll-margin-top: 80px; }
+
+/* ============================================================
+ * 우측 상품 정보 패널
+ * ============================================================ */
+.pd-badges { display: flex; gap: 8px; margin-bottom: 12px; }
+.pd-badge { font-size: 13px; font-weight: 700; border-radius: 4px; padding: 5px 9px; display: inline-flex; align-items: center; gap: 4px; }
+.pd-badge--best { background: var(--pg-primary); color: #fff; font-style: italic; }
+.pd-badge--mall { background: #f1f1f1; color: #555; font-weight: 600; }
+
+.pd-title { margin: 0 0 8px; font-size: 24px; font-weight: 800; letter-spacing: -.5px; }
+.pd-sub { margin: 0 0 18px; color: var(--pg-gray); font-size: 15px; }
+.pd-was { margin: 0 0 2px; color: var(--pg-gray-light); font-size: 15px; text-decoration: line-through; }
+.pd-price { margin: 0 0 18px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.pd-price__rate { font-size: 26px; font-weight: 800; color: var(--pg-primary); }
+.pd-price__amount { font-size: 28px; font-weight: 800; letter-spacing: -.5px; }
+.pd-price__each { color: var(--pg-gray); font-size: 15px; }
+
+.pd-coupon {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  border: 1px solid #ffc9a3; background: var(--pg-primary-soft);
+  border-radius: 8px; height: 52px; font-size: 15px; font-weight: 600; margin-bottom: 18px;
+}
+.pd-coupon em { font-style: normal; color: var(--pg-primary); font-weight: 700; }
+.pd-coupon__arrow { color: var(--pg-primary); font-size: 13px; }
+
+.pd-rating { display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; margin: 0 0 22px; }
+.pd-rating__star { color: #ffb400; }
+.pd-rating a { font-weight: 500; text-decoration: underline; color: var(--pg-ink); }
+.pd-rating__dot { color: var(--pg-gray-light); font-weight: 400; }
+
+.pd-ship { border-top: 1px solid var(--pg-line); padding: 20px 0; margin: 0 0 6px; font-size: 14px; }
+.pd-ship__row { display: flex; gap: 24px; margin-bottom: 14px; }
+.pd-ship__row:last-child { margin-bottom: 0; }
+.pd-ship dt { flex: 0 0 64px; color: var(--pg-gray); }
+.pd-ship dd { margin: 0; flex: 1; }
+.pd-ship__today { color: var(--pg-primary); font-weight: 800; font-style: italic; display: inline-flex; align-items: center; gap: 4px; margin-bottom: 6px; }
+.pd-ship__line { display: block; margin-bottom: 3px; }
+.pd-ship__line--sub { color: var(--pg-gray); }
+.pd-ship strong { font-weight: 700; }
+
+/* ---------- 선택한 옵션 (카페24 totalProducts 스타일) ---------- */
+.pd-selected { margin-top: 14px; }
+.pd-selected__title { font-size: 14px; color: var(--pg-ink); margin: 0 0 10px; font-weight: 600; }
+.pd-selected[data-empty="true"] { display: none; }
+.pd-selected .option_products { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.pd-selected-item { background: #f7f7f7; border-radius: 10px; padding: 16px; position: relative; }
+.pd-selected-item__name { font-size: 15px; font-weight: 700; display: block; margin-bottom: 4px; }
+.pd-selected-item__flavors, .pd-selected-item .po-row-flavors { color: var(--pg-gray); font-size: 13px; line-height: 1.5; padding-right: 24px; }
+.pd-selected-item__del { position: absolute; right: 12px; top: 12px; font-size: 16px; color: #999; padding: 4px; }
+.pd-selected-item__foot { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+.pd-selected-item__price { font-size: 16px; font-weight: 800; }
+/* 수량 스테퍼는 pick_option.css 의 .po-stepper 재사용 */
+
+/* ---------- 구매 소셜프루프 ---------- */
+.pd-social {
+  margin-top: 18px; background: var(--pg-primary-soft); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  height: 46px; font-size: 14px;
+}
+.pd-social strong { font-weight: 800; }
+.pd-social__coin {
+  width: 20px; height: 20px; border-radius: 50%; background: #ffb400;
+  color: #fff; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+}
+
+/* ---------- 무료배송 진행바 ---------- */
+.pd-freeship { margin-top: 20px; padding-bottom: 18px; border-bottom: 1px solid var(--pg-line); }
+.pd-freeship__bar { position: relative; height: 4px; border-radius: 2px; background: #eee; margin: 10px 44px 10px 0; }
+.pd-freeship__fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; background: var(--pg-primary); width: 0; transition: width .3s; }
+.pd-freeship__truck { position: absolute; right: 0; top: -26px; font-size: 22px; }
+.pd-freeship__row { display: flex; align-items: center; justify-content: space-between; font-size: 14px; }
+.pd-freeship__msg em { font-style: normal; color: var(--pg-primary); font-weight: 700; }
+.pd-freeship__msg.is-done { color: var(--pg-primary); font-weight: 700; }
+.pd-freeship__goal { color: var(--pg-gray); font-size: 13px; }
+
+/* ---------- 합계 / 액션 버튼 ---------- */
+.pd-total { display: flex; align-items: baseline; justify-content: space-between; padding: 18px 0; font-size: 16px; }
+.pd-total__sets strong { font-weight: 800; }
+.pd-total__price { font-size: 24px; font-weight: 800; }
+.pd-total__price strong { font-size: 28px; }
+
+.pd-actions { display: flex; gap: 10px; }
+.pd-actions__cart {
+  flex: 0 0 56px; height: 56px; border: 1px solid #ddd; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; background: #fff;
+}
+.pd-actions__npay {
+  flex: 1; height: 56px; border-radius: 10px; background: #111; color: #fff;
+  display: flex; align-items: center; justify-content: center; gap: 2px;
+  font-weight: 800; font-size: 17px;
+}
+.pd-actions__npay .npay-n {
+  width: 22px; height: 22px; border-radius: 5px; background: #03c75a; color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 900; margin-right: 4px;
+}
+.pd-actions__buy {
+  flex: 1.3; height: 56px; border-radius: 10px; background: var(--pg-primary); color: #fff;
+  font-size: 17px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+}
+
+/* ---------- 플로팅 (도움말/맨위로) ---------- */
+.pd-float { position: fixed; right: 28px; bottom: 28px; display: flex; flex-direction: column; gap: 12px; z-index: 900; }
+.pd-float__btn {
+  width: 52px; height: 52px; border-radius: 50%; background: #fff; border: 1px solid #eee;
+  box-shadow: 0 4px 14px rgba(0,0,0,.12); display: flex; align-items: center; justify-content: center; font-size: 20px;
+}
+.pd-float__btn--help { background: #1c86ff; color: #fff; border: 0; font-weight: 800; }
+
+/* ============================================================
+ * 모바일 (~767px)
+ * ============================================================ */
+.pd-buybar { display: none; }
+.pd-sheet-handle { display: none; }
+
+@media (max-width: 767px) {
+  :root { --pg-buybar-h: 72px; }
+
+  .hd-promo { font-size: 12px; padding: 10px 36px; }
+  .hd__inner { padding: 12px 16px; gap: 16px; }
+  .hd__logo { font-size: 22px; }
+  .hd__logo { order: 2; margin-right: auto; }
+  .hd__menu-btn { order: 1; display: block; }
+  .hd__search { display: none; }             /* 모바일: 검색은 아이콘으로 */
+  .hd__utils { order: 3; gap: 16px; }
+  .hd__util span { display: none; }          /* 라벨 숨김, 아이콘만 */
+  .hd__util svg { width: 24px; height: 24px; }
+  .gnb { display: none; }
+
+  .pd { padding: 0 0 calc(var(--pg-buybar-h) + 16px); }
+  .pd__inner { display: block; }
+  .pd-gallery { border-radius: 0; }
+  .pd-tabs { position: sticky; top: 0; background: #fff; z-index: 10; }
+  .pd-tabs__tab { font-size: 14px; padding: 14px 4px; }
+
+  /* 우측 패널 → 본문 아래로 흘려보내되, 옵션 영역은 시트로 분리 */
+  .pd__right { position: static; flex: none; padding: 20px 16px 0; }
+  .pd-title { font-size: 20px; }
+  .pd-price__rate { font-size: 24px; }
+  .pd-price__amount { font-size: 26px; }
+  .pd-actions { display: none; }             /* PC 버튼 숨김 → 하단 고정바 사용 */
+  .pd-float { display: none; }
+
+  /* 하단 고정 구매바 */
+  .pd-buybar {
+    display: flex; gap: 10px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 10005;
+    background: #fff; border-top: 1px solid var(--pg-line);
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+  .pd-buybar__cart {
+    flex: 1; height: 48px; border: 1px solid #ddd; border-radius: 10px; background: #fff;
+    display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; font-weight: 700;
+  }
+  .pd-buybar__buy {
+    flex: 1.4; height: 48px; border-radius: 10px; background: var(--pg-primary); color: #fff;
+    font-size: 15px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+  }
+  /* 시트 열림 상태에서는 Npay 포함 3버튼형 */
+  .pd-buybar--sheet .pd-buybar__cart { flex: 0 0 52px; font-size: 18px; }
+  .pd-buybar--sheet .pd-buybar__cart span { display: none; }
+  .pd-buybar--sheet .pd-buybar__npay {
+    flex: 1; height: 48px; border-radius: 10px; background: #111; color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 800;
+  }
+  .pd-buybar__npay { display: none; }
+  .pd-buybar--sheet .pd-buybar__npay { display: flex; }
+  .pd-buybar--sheet .pd-buybar__npay .npay-n {
+    width: 20px; height: 20px; border-radius: 4px; background: #03c75a; color: #fff;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; margin-right: 4px;
+  }
+
+  /* 옵션 바텀시트: #pdOptionSheet 로 감싼 영역 */
+  .pd-sheet {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 10002;
+    background: #fff; border-radius: 16px 16px 0 0;
+    max-height: 82vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 20px 16px calc(var(--pg-buybar-h) + 12px);
+    transform: translateY(105%); transition: transform .25s ease;
+    box-shadow: 0 -8px 28px rgba(0,0,0,.18);
+  }
+  .pd-sheet.is-open { transform: translateY(0); }
+  .pd-sheet-handle {
+    display: block; position: sticky; top: -12px; margin: -12px auto 10px;
+    width: 100%; padding: 6px 0 10px; background: #fff; border: 0;
+  }
+  .pd-sheet-handle::before {
+    content: ''; display: block; width: 44px; height: 4px; border-radius: 2px;
+    background: #ddd; margin: 0 auto;
+  }
+  .pd-sheet-dim {
+    position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 10001;
+    opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .pd-sheet-dim.is-open { opacity: 1; pointer-events: auto; }
+  body.pd-sheet-lock { overflow: hidden; }
+
+  /* 시트 내부 요약 위젯 간격 */
+  .pd-sheet .pd-freeship { border-bottom: 0; }
+  .pd-sheet .pd-total { padding: 6px 0 0; }
+}
+
+@media (min-width: 768px) {
+  .hd__menu-btn { display: none; }
+  .pd-sheet-dim { display: none; }
+}
+
+/* 좁은 폭 안전장치 */
+@media (max-width: 360px) {
+  .pd-price { gap: 5px; }
+  .pd-buybar__buy { font-size: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-sheet, .pd-sheet-dim, .pd-freeship__fill { transition: none; }
+}

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>상품 상세 — 전체 UI 로컬 미리보기 (카페24 모킹)</title>
+<link rel="stylesheet" href="../css/detail.css">
+<link rel="stylesheet" href="../css/pick_option.css">
+<style>
+  /* 미리보기 전용: 모킹 select 숨김 */
+  .mock-hidden { display: none; }
+</style>
+</head>
+<body class="pd-page">
+
+<div class="hd-promo">
+  <a href="#">회원 가입 시 즉시 사용 가능한 <em>45,000원</em> 쿠폰팩을 드려요! <span class="hd-promo__arrow">&gt;</span></a>
+  <button type="button" class="hd-promo__close" aria-label="닫기" onclick="this.parentNode.style.display='none'">&times;</button>
+</div>
+
+<header class="hd">
+  <div class="hd__inner">
+    <button type="button" class="hd__menu-btn" aria-label="메뉴">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <h1 class="hd__logo"><a href="#">한끼통살</a></h1>
+    <form class="hd__search" onsubmit="return false">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <input type="text" placeholder="검색어를 입력해 주세요">
+    </form>
+    <nav class="hd__utils">
+      <a class="hd__util" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+        <span>로그인</span>
+      </a>
+      <a class="hd__util" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <i class="hd__badge">1</i>
+        <span>장바구니</span>
+      </a>
+      <a class="hd__util" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 12a8 8 0 0 1 16 0v5a2 2 0 0 1-2 2h-2v-6h4M4 12v5a2 2 0 0 0 2 2h2v-6H4"/></svg>
+        <span>고객센터</span>
+      </a>
+    </nav>
+  </div>
+  <div class="gnb">
+    <ul class="gnb__menu">
+      <li><a href="#"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg> 카테고리</a></li>
+      <li class="is-active"><a href="#">역조공특가</a></li>
+      <li><a href="#">베스트</a></li>
+      <li><a href="#">대량구매</a></li>
+      <li><a href="#">맛별구매</a></li>
+      <li><a href="#">신제품</a></li>
+    </ul>
+    <a class="gnb__event" href="#">&#9889; 신상반값</a>
+  </div>
+</header>
+
+<main class="pd">
+  <div class="pd__inner">
+
+    <section class="pd__left">
+      <div class="pd-gallery">
+        <img src="../assets/gallery_main.png" alt="원하는 맛을 다양하게 골라담기">
+        <span class="pd-gallery__pager">1 <em>|</em> 3</span>
+      </div>
+      <nav class="pd-tabs">
+        <button type="button" class="pd-tabs__tab is-active" data-target="#tabDetail">상세정보</button>
+        <button type="button" class="pd-tabs__tab" data-target="#tabReview">리뷰(103,953)</button>
+        <button type="button" class="pd-tabs__tab" data-target="#tabNutrition">영양정보</button>
+        <button type="button" class="pd-tabs__tab" data-target="#tabGuide">구매안내</button>
+      </nav>
+      <div class="pd-content">
+        <div id="tabDetail" class="pd-content__section">
+          <img src="../assets/detail_01.png" alt="어차피 결국엔 통닭가슴살">
+        </div>
+        <div id="tabReview" class="pd-content__section"></div>
+        <div id="tabNutrition" class="pd-content__section"></div>
+        <div id="tabGuide" class="pd-content__section"></div>
+      </div>
+    </section>
+
+    <aside class="pd__right">
+      <div class="pd-badges">
+        <span class="pd-badge pd-badge--best">&#9889; 온라인 최저가</span>
+        <span class="pd-badge pd-badge--mall">한끼통살 공식몰</span>
+      </div>
+      <h2 class="pd-title">[골라담기] 한끼통살 통 닭가슴살 18종</h2>
+      <p class="pd-sub">최저가로 즐기는 통살 닭가슴살 100개 골라담기</p>
+      <p class="pd-was">33,000원</p>
+      <p class="pd-price">
+        <em class="pd-price__rate">25%</em>
+        <strong class="pd-price__amount">24,700원</strong>
+        <span class="pd-price__each">(개당 2,470원)</span>
+      </p>
+      <a class="pd-coupon" href="#">&#127903; 1초 가입 후 <em>쿠폰팩 받기</em> <span class="pd-coupon__arrow">&#8250;</span></a>
+      <p class="pd-rating">
+        <span class="pd-rating__star">&#9733;</span> 4.9
+        <span class="pd-rating__dot">&middot;</span>
+        <a href="#tabReview">리뷰 23,504</a>
+      </p>
+      <dl class="pd-ship">
+        <div class="pd-ship__row">
+          <dt>출고정보</dt>
+          <dd>
+            <span class="pd-ship__today">&#9889; 오늘출발</span>
+            <span class="pd-ship__line">평일 14시 / 주말 9시 이전 결제시 당일출고</span>
+            <span class="pd-ship__line pd-ship__line--sub">공휴일 제외, 주문량에 따라 최대 5영업일 이내 출고</span>
+          </dd>
+        </div>
+        <div class="pd-ship__row">
+          <dt>배송비</dt>
+          <dd><strong>3,000원</strong> (4만원 이상 구매 시 무료배송)</dd>
+        </div>
+      </dl>
+
+      <div id="pdOptionSheet" class="pd-sheet">
+        <button type="button" class="pd-sheet-handle" aria-label="옵션 닫기"></button>
+
+        <div id="pickOptionRoot"></div>
+
+        <!-- 카페24 기본 옵션 (모킹) -->
+        <div class="mock-hidden">
+          <select option_select_element>
+            <option value="*">- [필수] 옵션을 선택해 주세요 -</option>
+            <option value="10개입_1">10개입_1</option>
+            <option value="10개입_2">10개입_2</option>
+            <option value="30개입_1">30개입_1</option>
+            <option value="30개입_2">30개입_2</option>
+            <option value="50개입_1">50개입_1</option>
+            <option value="50개입_2">50개입_2</option>
+            <option value="100개입_1">100개입_1</option>
+          </select>
+        </div>
+
+        <!-- 카페24 선택상품 목록 (모킹) -->
+        <div class="pd-selected" data-empty="true">
+          <p class="pd-selected__title">선택한 옵션</p>
+          <ul id="totalProducts"><div class="option_products"></div></ul>
+        </div>
+
+        <div class="pd-social"><span class="pd-social__coin">W</span> 오늘 <strong>N명</strong>이 구매했어요</div>
+
+        <div class="pd-freeship">
+          <div class="pd-freeship__bar">
+            <span class="pd-freeship__fill"></span>
+            <span class="pd-freeship__truck">&#128666;</span>
+          </div>
+          <div class="pd-freeship__row">
+            <span class="pd-freeship__msg"><em>40,000원</em> 더 담으면 <em>무료배송</em></span>
+            <span class="pd-freeship__goal">4만원</span>
+          </div>
+        </div>
+
+        <div class="pd-total">
+          <span class="pd-total__sets">총 <strong data-pd-total-sets>0</strong>세트</span>
+          <span class="pd-total__price">총 <strong data-pd-total-price>0</strong>원</span>
+        </div>
+      </div>
+      <div class="pd-sheet-dim"></div>
+
+      <div class="pd-actions">
+        <button type="button" class="pd-actions__cart btn_cart" aria-label="장바구니">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        </button>
+        <button type="button" class="pd-actions__npay"><span class="npay-n">N</span> pay</button>
+        <button type="button" class="pd-actions__buy btnBuy">바로 구매하기</button>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<div class="pd-buybar">
+  <button type="button" class="pd-buybar__cart btn_cart" data-open-sheet>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+    <span>장바구니</span>
+  </button>
+  <button type="button" class="pd-buybar__npay"><span class="npay-n">N</span> pay</button>
+  <button type="button" class="pd-buybar__buy btnBuy" data-open-sheet>바로 구매하기</button>
+</div>
+
+<div class="pd-float">
+  <button type="button" class="pd-float__btn pd-float__btn--help" aria-label="도움말">?</button>
+  <button type="button" class="pd-float__btn" aria-label="맨 위로" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
+</div>
+
+<script>
+/* ---- 카페24 옵션 change → 선택상품 행 생성 (모킹, 시안형 카드 마크업) ---- */
+(function () {
+  var PRICES = { '10개입': 24700, '30개입': 70500, '50개입': 111500, '100개입': 196000 };
+  var sel = document.querySelector('select[option_select_element]');
+  var listBox = document.querySelector('#totalProducts .option_products');
+  sel.addEventListener('change', function () {
+    var v = sel.value;
+    if (!v || v === '*') return;
+    var base = v.replace(/_\d+$/, '');
+    var li = document.createElement('li');
+    li.className = 'pd-selected-item';
+    li.innerHTML =
+      '<span class="pd-selected-item__name option">' + v + '</span>' +
+      '<button type="button" class="pd-selected-item__del" aria-label="삭제">&#10005;</button>' +
+      '<div class="pd-selected-item__foot">' +
+      '  <span class="po-stepper">' +
+      '    <button type="button" class="po-stepper__btn" data-d="-1">&minus;</button>' +
+      '    <input class="po-stepper__value" type="number" value="1" min="1" style="border:0;width:34px;text-align:center;font-weight:700" />' +
+      '    <button type="button" class="po-stepper__btn" data-d="1">+</button>' +
+      '  </span>' +
+      '  <strong class="pd-selected-item__price price">' + (PRICES[base] || 0).toLocaleString() + '원</strong>' +
+      '</div>';
+    li.querySelector('.pd-selected-item__del').addEventListener('click', function () { li.remove(); });
+    li.querySelectorAll('.po-stepper__btn').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var input = li.querySelector('.po-stepper__value');
+        input.value = Math.max(1, (parseInt(input.value, 10) || 1) + parseInt(b.dataset.d, 10));
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+    });
+    listBox.appendChild(li);
+    sel.value = '*';
+  });
+})();
+</script>
+<script src="../js/option_config.js"></script>
+<script src="../js/pick_option.js"></script>
+<script src="../js/page.js"></script>
+</body>
+</html>

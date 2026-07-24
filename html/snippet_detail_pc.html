@@ -1,0 +1,36 @@
+<!-- ============================================================
+  [PC] 상품 상세 detail.html 삽입 스니펫
+  카페24 관리자 > 디자인(PC) > 상품 상세 페이지(detail.html)
+
+  1) <head> 또는 옵션 영역 상단에 CSS 로드
+  2) #pickOptionRoot 를 "기본 옵션 영역 바로 아래"에 삽입
+     (보통 <div module="Product_detail"> 내부, 옵션 테이블
+      .xans-product-option 다음 / 선택상품 목록 #totalProducts 이전)
+  3) 페이지 하단에서 JS 로드 — 반드시 config → picker 순서
+  ※ 기본 옵션 UI 는 아래 CSS 로 "숨김"만 합니다. DOM/이벤트 삭제 금지.
+============================================================ -->
+
+<!-- (1) CSS -->
+<link rel="stylesheet" href="/web/upload/pickoption/css/pick_option.css" />
+
+<!-- 기본 텍스트버튼/셀렉트 옵션 숨김 (기능 유지, 화면만 감춤)
+     ※ 스킨마다 클래스가 다르므로 개발자도구로 실제 옵션 행을 확인 후 조정
+
+     ⚠️ 중요 — 먼저 "숨김 없이" 설치해 동작을 확인한 뒤 숨기세요.
+     카페24 스킨에 따라 옵션 영역을 숨기거나 삭제하면 select 자체가
+     DOM 에서 사라져 담기가 동작하지 않습니다.
+     (콘솔에서 document.querySelectorAll('select').length 가 0 이면 이 경우)
+     반드시 display:none 만 사용하고, 요소 삭제·주석 처리는 금지입니다. -->
+<style>
+  /* 예시: 옵션 select 가 들어있는 행만 숨김. #totalProducts(선택상품 목록)는 숨기지 마세요. */
+  /* 동작 확인 전까지는 아래 줄을 주석 상태로 두세요.
+  .xans-product-option tr.xans-record- { display: none; }
+  */
+</style>
+
+<!-- (2) 골라담기 UI 마운트 지점 -->
+<div id="pickOptionRoot"></div>
+
+<!-- (3) JS — 로드 순서 고정: config → picker -->
+<script src="/web/upload/pickoption/js/option_config.js"></script>
+<script src="/web/upload/pickoption/js/pick_option.js"></script>

@@ -1,0 +1,25 @@
+<!-- ============================================================
+  [MOBILE] 상품 상세 삽입 스니펫
+  카페24 관리자 > 디자인(모바일) > 상품 상세(detail.html)
+  * 모바일 전용 스킨이 없는 반응형 스킨이라면 PC 스니펫만으로 충분합니다.
+
+  동작 모드 (option_config.js > mobile.mode)
+    - 'sheet'  : 개입수 카드 탭 → 맛 선택이 바텀시트로 표시 (시안 기준, 기본값)
+    - 'inline' : PC 와 동일하게 옵션 영역에 바로 노출
+
+  하단 고정 구매바(장바구니/바로구매)와 겹치지 않도록
+  mobile.bottomOffset 값을 실제 구매바 높이(px)로 맞춰 주세요.
+============================================================ -->
+
+<link rel="stylesheet" href="/web/upload/pickoption/css/pick_option.css" />
+
+<style>
+  /* 기본 옵션 UI 숨김 (기능 유지) — 실제 모바일 스킨 구조 확인 후 조정 */
+  .xans-product-option .product-option-select { display: none; }
+</style>
+
+<!-- 옵션 레이어(구매 시트) 내부, 기본 옵션 영역 자리에 삽입 -->
+<div id="pickOptionRoot"></div>
+
+<script src="/web/upload/pickoption/js/option_config.js"></script>
+<script src="/web/upload/pickoption/js/pick_option.js"></script>

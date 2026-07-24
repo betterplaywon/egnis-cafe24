@@ -1,0 +1,214 @@
+/* ============================================================
+ * pick_option.css — 골라담기 UI 스타일 (Figma 시안 기준)
+ * 색상/치수는 아래 :root 변수만 바꿔도 됩니다.
+ * ============================================================ */
+:root {
+  --po-primary: #ff6b00;          /* 브랜드 오렌지 */
+  --po-primary-bg: #fff4ec;       /* 선택 카드 배경 */
+  --po-danger: #f03e3e;
+  --po-danger-bg: #fdecec;
+  --po-ink: #191919;
+  --po-sub: #888;
+  --po-line: #e5e5e5;
+  --po-panel-bg: #f7f7f7;
+  --po-radius: 10px;
+  --po-bottom-offset: 76px;       /* JS 가 config 값으로 덮어씀 */
+}
+
+.po { font-size: 14px; color: var(--po-ink); line-height: 1.4; }
+.po *, .po *::before, .po *::after { box-sizing: border-box; }
+.po button { font: inherit; cursor: pointer; background: none; border: 0; padding: 0; }
+.po button:disabled { cursor: default; }
+.po button:focus-visible,
+.po-panel button:focus-visible { outline: 2px solid var(--po-primary); outline-offset: 2px; }
+
+/* ---------- 섹션 ---------- */
+.po__section { border: 1px solid var(--po-line); border-radius: var(--po-radius); overflow: hidden; background: #fff; }
+.po__head {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 14px 16px; background: var(--po-panel-bg);
+  font-weight: 700; font-size: 15px; text-align: left;
+}
+.po__chev { width: 10px; height: 10px; border-right: 2px solid var(--po-ink); border-bottom: 2px solid var(--po-ink); transform: rotate(-135deg); transition: transform .2s; }
+.po__section.is-collapsed .po__chev { transform: rotate(45deg); }
+.po__section.is-collapsed .po__body { display: none; }
+
+/* ---------- 개입수 카드 ---------- */
+.po__cards { list-style: none; margin: 0; padding: 0; }
+.po-card { border-bottom: 1px solid var(--po-line); }
+.po-card:last-child { border-bottom: 0; }
+.po-card__btn {
+  display: flex; align-items: flex-start; gap: 12px;
+  width: 100%; padding: 16px; text-align: left;
+  border: 1px solid transparent; border-radius: 8px;
+  transition: background .15s, border-color .15s;
+}
+.po-card__radio {
+  flex: 0 0 auto; width: 20px; height: 20px; margin-top: 1px;
+  border: 1.5px solid #ccc; border-radius: 50%; position: relative; background: #fff;
+}
+.po-card.is-active .po-card__btn { background: var(--po-primary-bg); border-color: var(--po-primary); }
+.po-card.is-active .po-card__radio { border-color: var(--po-primary); }
+.po-card.is-active .po-card__radio::after {
+  content: ''; position: absolute; inset: 4px; border-radius: 50%; background: var(--po-primary);
+}
+.po-card__label { flex: 0 0 64px; font-weight: 700; font-size: 15px; padding-top: 1px; }
+.po-card__info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.po-card__priceline { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.po-card__price { font-size: 15px; font-weight: 800; }
+.po-card__discount { color: var(--po-sub); font-size: 13px; }
+.po-card__unit { color: var(--po-sub); font-size: 13px; }
+.po-card__badge {
+  font-size: 12px; font-weight: 700; padding: 3px 7px; border-radius: 4px; white-space: nowrap;
+}
+.po-card__badge--primary { color: var(--po-primary); background: #ffece0; }
+.po-card__badge--danger { color: var(--po-danger); background: var(--po-danger-bg); }
+
+/* 추가 가능 횟수 소진 상태 */
+.po-card.is-maxed .po-card__btn { opacity: .45; }
+.po-card.is-maxed .po-card__btn:hover { background: #fafafa; }
+
+/* ---------- 맛 선택 패널 ---------- */
+.po-panel { margin-top: 12px; border: 1px solid var(--po-line); border-radius: var(--po-radius); background: #fff; overflow: hidden; }
+.po-panel[hidden] { display: none; }
+.po-panel__head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 16px; background: var(--po-panel-bg); position: relative;
+}
+.po-panel__title { font-size: 15px; font-weight: 700; }
+.po-panel__close { font-size: 22px; line-height: 1; color: #555; padding: 2px 4px; }
+.po-panel__grab { display: none; }
+
+.po-flavors { list-style: none; margin: 0; padding: 4px 16px; max-height: 430px; overflow-y: auto; }
+.po-flavor {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 0; border-bottom: 1px solid #f0f0f0;
+}
+.po-flavor:last-child { border-bottom: 0; }
+.po-flavor__thumb {
+  position: relative; flex: 0 0 52px; width: 52px; height: 52px;
+  border-radius: 8px; overflow: hidden; background: #f2f2f2;
+}
+.po-flavor__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.po-flavor__soldout {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(25,25,25,.65); color: #fff; font-size: 12px; font-weight: 700; border-radius: 8px;
+}
+.po-flavor__info { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.po-flavor__badge { font-style: normal; color: var(--po-primary); font-size: 12px; font-weight: 700; }
+.po-flavor__name { font-size: 14px; font-weight: 700; }
+.po-flavor__meta { color: var(--po-sub); font-size: 12px; }
+.po-flavor.is-soldout .po-flavor__name,
+.po-flavor.is-soldout .po-flavor__meta { color: #bbb; }
+
+/* 스테퍼 */
+.po-stepper {
+  flex: 0 0 auto; display: inline-flex; align-items: center;
+  border: 1px solid var(--po-line); border-radius: 8px; overflow: hidden; background: #fff;
+}
+.po-stepper__btn {
+  width: 34px; height: 34px; font-size: 17px; color: var(--po-ink);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.po-stepper__btn:disabled { color: #ccc; }
+.po-stepper__value { min-width: 34px; text-align: center; font-weight: 700; font-size: 14px; }
+.po-flavor.is-soldout .po-stepper { background: #f5f5f5; }
+.po-flavor.is-soldout .po-stepper__value { color: #ccc; }
+
+/* 푸터: 총 수량 + 선택완료 */
+.po-panel__foot { position: relative; border-top: 1px solid var(--po-line); padding: 0 16px 16px; }
+.po-panel__total {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0; font-size: 14px;
+}
+.po-panel__counter { color: var(--po-primary); font-weight: 800; }
+.po-panel__complete {
+  width: 100%; height: 48px; border-radius: 8px;
+  background: #191919; color: #fff; font-size: 15px; font-weight: 700;
+  transition: background .15s;
+}
+.po-panel__complete:disabled { background: #e3e3e3; color: #a5a5a5; }
+
+/* 툴팁 (검정 말풍선) */
+.po-panel__tooltip {
+  position: absolute; right: 16px; top: -14px; transform: translateY(-100%);
+  background: #191919; color: #fff; font-size: 13px;
+  padding: 9px 14px; border-radius: 8px; white-space: nowrap; z-index: 5;
+}
+.po-panel__tooltip::after {
+  content: ''; position: absolute; right: 22px; bottom: -5px;
+  border: 6px solid transparent; border-top-color: #191919; border-bottom: 0;
+}
+.po-panel__tooltip em { font-style: normal; color: var(--po-primary); font-weight: 700; }
+.po-panel__tooltip[hidden] { display: none; }
+
+/* ---------- 선택상품 행 맛 구성 표시 ---------- */
+.po-row-flavors { display: block; margin-top: 4px; color: var(--po-sub); font-size: 12px; line-height: 1.5; word-break: keep-all; }
+
+/* ---------- 토스트 ---------- */
+.po-toast {
+  position: fixed; left: 50%; bottom: calc(var(--po-bottom-offset) + 24px);
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(25, 25, 25, .92); color: #fff;
+  font-size: 14px; padding: 11px 18px; border-radius: 24px;
+  z-index: 10010; box-shadow: 0 4px 14px rgba(0,0,0,.2);
+  animation: po-toast-in .18s ease-out;
+}
+.po-toast[hidden] { display: none; }
+.po-toast__icon { width: 18px; height: 18px; border-radius: 50%; flex: 0 0 auto; position: relative; }
+.po-toast--ok .po-toast__icon { background: #2ea043; }
+.po-toast--ok .po-toast__icon::after {
+  content: ''; position: absolute; left: 5px; top: 4px; width: 6px; height: 9px;
+  border-right: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(45deg);
+}
+.po-toast--warn .po-toast__icon { background: var(--po-danger); }
+.po-toast--warn .po-toast__icon::after {
+  content: '!'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 12px;
+}
+@keyframes po-toast-in { from { opacity: 0; transform: translateX(-50%) translateY(8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .po-toast { animation: none; }
+  .po__chev { transition: none; }
+}
+
+/* ---------- 모바일 ---------- */
+.po-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 10000;
+}
+.po-overlay[hidden] { display: none; }
+body.po-lock { overflow: hidden; }
+
+@media (max-width: 767px) {
+  .po { font-size: 13px; }
+  .po-card__btn { padding: 14px 12px; gap: 10px; }
+  .po-card__label { flex-basis: 56px; font-size: 14px; }
+  .po-card__price { font-size: 14px; }
+  .po-card__priceline { gap: 5px; }
+  .po-flavor__thumb { flex-basis: 46px; width: 46px; height: 46px; }
+  .po-stepper__btn { width: 31px; height: 31px; }
+  .po-stepper__value { min-width: 30px; }
+
+  /* 바텀시트 모드 (config.mobile.mode === 'sheet') */
+  .po-panel--sheet {
+    position: fixed; left: 0; right: 0; bottom: 0; top: auto; margin: 0;
+    border: 0; border-radius: 16px 16px 0 0; z-index: 10001;
+    max-height: 78vh; display: flex; flex-direction: column;
+    /* 하단 고정 구매바와 겹치지 않도록 안전 영역 확보 */
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -6px 24px rgba(0,0,0,.15);
+  }
+  .po-panel--sheet .po-panel__grab {
+    display: block; position: absolute; left: 50%; top: -12px; transform: translateX(-50%);
+    width: 44px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.9);
+  }
+  .po-panel--sheet .po-flavors { flex: 1 1 auto; max-height: none; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .po-panel--sheet .po-panel__foot { padding-bottom: 12px; }
+}
+
+/* 좁은 폭에서도 텍스트/버튼 깨짐 방지 */
+@media (max-width: 360px) {
+  .po-card__priceline { flex-direction: column; align-items: flex-start; gap: 3px; }
+  .po-panel__tooltip { white-space: normal; max-width: calc(100vw - 48px); }
+}
