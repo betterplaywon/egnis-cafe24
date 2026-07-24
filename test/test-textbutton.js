@@ -41,7 +41,11 @@ const fill = n => { for (let i = 0; i < n; i++) plus('tteok'); };
 (async () => {
   console.log('\n[1] 옵션 컨트롤 탐지 (텍스트버튼형)');
   const diag = window.PickOption.diagnose();
-  assert(diag['인식된 옵션값 수'] === 7, `옵션값 7개 인식 (실제: ${diag['인식된 옵션값 수']})`);
+  /* 기대값은 픽스처의 옵션 버튼 수에서 직접 구합니다 —
+   * 옵션값을 늘려도 테스트가 따라오도록 (하드코딩 금지) */
+  const expectedValues = document.querySelectorAll('.ec-option-button').length;
+  assert(diag['인식된 옵션값 수'] === expectedValues,
+    `옵션값 ${expectedValues}개 인식 (실제: ${diag['인식된 옵션값 수']})`);
   assert(diag['옵션 표시방식'].includes('텍스트버튼형'), `표시방식 = 텍스트버튼형 (실제: ${diag['옵션 표시방식']})`);
   assert(diag['선택상품 목록'] && diag['선택상품 목록'].nodeType === 1, '선택상품 목록 컨테이너 탐지됨');
 

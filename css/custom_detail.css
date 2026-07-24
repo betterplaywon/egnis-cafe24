@@ -1,7 +1,9 @@
 /* ============================================================
- * detail.css — 상품 상세 페이지 전체 UI (Figma 시안 기준)
+ * custom_detail.css — 상품 상세 페이지 전체 UI (Figma 시안 기준)
  * 골라담기 UI(pick_option.css)와 함께 로드합니다.
- *   로드 순서: detail.css → pick_option.css
+ *   로드 순서: (스킨 원본 detail.css) → custom_detail.css → pick_option.css
+ * ★ 스킨 원본 /css/module/product/detail.css 와 파일명을 구분합니다.
+ *   같은 이름으로 올리면 기본 스킨 스타일을 덮어써 상세페이지가 깨집니다.
  * ============================================================ */
 :root {
   --pg-primary: #ff6b00;
@@ -236,6 +238,13 @@ html, body { margin: 0; padding: 0; }
 .pd-buybar { display: none; }
 .pd-sheet-handle { display: none; }
 
+/* 바텀시트 딤 — PC 기본 상태.
+ * 아래 모바일 블록에만 두면 PC 에서 스타일 없는 빈 div 가 되고, 카페24 스킨 CSS 가
+ * hidden(UA 기본 display:none)을 덮어쓰면 본문 위를 덮어 클릭을 먹습니다.
+ * hidden 속성 하나에 의존하지 않도록 여기서 차단합니다. */
+.pd-sheet-dim { display: none; pointer-events: none; }
+.pd-sheet-dim[hidden] { display: none !important; }
+
 @media (max-width: 767px) {
   :root { --pg-buybar-h: 72px; }
 
@@ -311,6 +320,7 @@ html, body { margin: 0; padding: 0; }
     background: #ddd; margin: 0 auto;
   }
   .pd-sheet-dim {
+    display: block;
     position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 10001;
     opacity: 0; pointer-events: none; transition: opacity .25s;
   }

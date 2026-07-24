@@ -361,6 +361,13 @@
 
     overlay.addEventListener('click', closePanel);
 
+    /* 딤 표시 — hidden 속성과 .is-open 클래스를 함께 토글합니다.
+     * 스킨 CSS 가 hidden 을 덮어써도 클래스가 없으면 화면을 가리지 않습니다. */
+    function setOverlay(show) {
+      overlay.hidden = !show;
+      overlay.classList.toggle('is-open', !!show);
+    }
+
     function useSheet() {
       state.isMobile = window.innerWidth < (CFG.mobile.breakpoint || 768);
       return state.isMobile && CFG.mobile.mode === 'sheet';
@@ -368,7 +375,7 @@
     window.addEventListener('resize', function () {
       var asSheet = useSheet() && !panelWrap.hidden;
       panelWrap.classList.toggle('po-panel--sheet', asSheet);
-      overlay.hidden = !asSheet;
+      setOverlay(asSheet);
       /* 시트 모드가 아니게 되면 body 스크롤 잠금도 반드시 함께 해제 (QA 9) */
       document.body.classList.toggle('po-lock', asSheet);
     });
@@ -495,12 +502,12 @@
       buildPanel(countCfg);
       panelWrap.hidden = false;
       var sheet = useSheet();
-      overlay.hidden = !sheet;
+      setOverlay(sheet);
       if (sheet) document.body.classList.add('po-lock');
     }
     function closePanel() {
       panelWrap.hidden = true;
-      overlay.hidden = true;
+      setOverlay(false);
       document.body.classList.remove('po-lock');
     }
 

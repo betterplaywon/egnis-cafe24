@@ -64,7 +64,7 @@ window.PICK_OPTION_CONFIG = {
       discount: '41% 할인',
       unitPrice: '1개 : 1,960원',
       badge: { text: '최대할인', type: 'danger' },
-      maxAdd: 1
+      maxAdd: 2
     }
   ],
 
@@ -74,19 +74,19 @@ window.PICK_OPTION_CONFIG = {
    * unitSize  : 맛 1단위당 개수. 스테퍼 1 = 10개입 1팩
    * name      : 표시명 (선택상품 요약 문자열에도 사용)
    * meta      : 부가 정보 표시 (kcal, 단백질)
-   * img       : 썸네일 경로. 카페24 파일업로더(/web/upload/pickoption/...)에
+   * img       : 썸네일 경로. 카페24 파일업로더(/web/upload/pick_option/...)에
    *             올린 뒤 경로를 맞춰 주세요. 없으면 회색 박스로 표시됩니다.
    * badge     : 이름 위 강조 문구 (예: '신제품 출시!'), 없으면 null
    * soldOut   : true 면 "품절" 처리되어 선택 불가(회색/비활성)
    * ---------------------------------------------------------- */
   unitSize: 10,
   flavors: [
-    { id: 'tteok',    name: '떡볶이맛(10개입)',     meta: '130kcal, 단백질 18g', img: '/web/upload/pickoption/assets/flavor_tteok.png',    badge: '신제품 출시!', soldOut: false },
-    { id: 'buttercurry', name: '버터치킨커리맛(10개입)', meta: '105kcal, 단백질 18g', img: '/web/upload/pickoption/assets/flavor_buttercurry.png', badge: null, soldOut: true },
-    { id: 'hotyang',  name: '핫양념치킨맛 (10개입)',  meta: '125kcal, 단백질 19g', img: '/web/upload/pickoption/assets/flavor_hotyang.png',  badge: null, soldOut: false },
-    { id: 'chipotle', name: '치폴레마요맛 (10개입)',  meta: '125kcal, 단백질 18g', img: '/web/upload/pickoption/assets/flavor_chipotle.png', badge: null, soldOut: false },
-    { id: 'honeysoy', name: '허니소이맛 (10개입)',   meta: '125kcal, 단백질 18g', img: '/web/upload/pickoption/assets/flavor_honeysoy.png', badge: null, soldOut: false },
-    { id: 'galbi',    name: '왕갈비맛 (10개입)',     meta: '125kcal, 단백질 18g', img: '/web/upload/pickoption/assets/flavor_galbi.png',    badge: null, soldOut: false }
+    { id: 'tteok',    name: '떡볶이맛(10개입)',     meta: '130kcal, 단백질 18g', img: 'https://ecimg.cafe24img.com/pg3181b42526623096/egnisgo/web/upload/pick_option/%ED%86%B5%EC%82%B4%EC%86%8C%EC%8A%A4_%EB%96%A1%EB%B3%B6%EC%9D%B4%EB%A7%9B.png',    badge: '신제품 출시!', soldOut: false },
+    { id: 'buttercurry', name: '버터치킨커리맛(10개입)', meta: '105kcal, 단백질 18g', img: 'https://ecimg.cafe24img.com/pg3181b42526623096/egnisgo/web/upload/pick_option/%ED%86%B5%EC%82%B4%EC%86%8C%EC%8A%A4_%EB%B2%84%ED%84%B0%EC%B9%98%ED%82%A8%EC%BB%A4%EB%A6%AC%EB%A7%9B.png', badge: null, soldOut: true },
+    { id: 'hotyang',  name: '핫양념치킨맛 (10개입)',  meta: '125kcal, 단백질 19g', img: 'https://ecimg.cafe24img.com/pg3181b42526623096/egnisgo/web/upload/pick_option/%ED%86%B5%EC%82%B4%EC%86%8C%EC%8A%A4_%ED%95%AB%EC%96%91%EB%85%90%EC%B9%98%ED%82%A8%EB%A7%9B.png',  badge: null, soldOut: false },
+    { id: 'chipotle', name: '치폴레마요맛 (10개입)',  meta: '125kcal, 단백질 18g', img: 'https://ecimg.cafe24img.com/pg3181b42526623096/egnisgo/web/upload/pick_option/%ED%86%B5%EC%82%B4%EC%86%8C%EC%8A%A4_%EC%B9%98%ED%8F%B4%EB%A0%88%EB%A7%88%EC%9A%94%EB%A7%9B.png', badge: null, soldOut: false },
+    { id: 'honeysoy', name: '허니소이맛 (10개입)',   meta: '125kcal, 단백질 18g', img: 'https://ecimg.cafe24img.com/pg3181b42526623096/egnisgo/web/upload/pick_option/%ED%86%B5%EC%82%B4%EC%86%8C%EC%8A%A4_%ED%97%88%EB%8B%88%EC%86%8C%EC%9D%B4%EB%A7%9B.png', badge: null, soldOut: false },
+    { id: 'galbi',    name: '왕갈비맛 (10개입)',     meta: '125kcal, 단백질 18g', img: 'https://ecimg.cafe24img.com/pg3181b42526623096/egnisgo/web/upload/pick_option/%ED%86%B5%EC%82%B4%EC%86%8C%EC%8A%A4_%EC%99%95%EA%B0%88%EB%B9%84%EB%A7%9B.png',    badge: null, soldOut: false }
     /* 맛을 추가하려면 위 형식 그대로 객체를 계속 추가하면 됩니다. (최대 18종) */
   ],
 

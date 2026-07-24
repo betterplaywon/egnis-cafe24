@@ -39,14 +39,15 @@
     function openSheet() {
       if (!sheet || !isMobile()) return;
       sheet.classList.add('is-open');
-      if (dim) dim.classList.add('is-open');
+      /* 딤은 hidden 속성으로도 막혀 있으므로 클래스와 함께 해제합니다. */
+      if (dim) { dim.hidden = false; dim.classList.add('is-open'); }
       if (buybar) buybar.classList.add('pd-buybar--sheet');
       document.body.classList.add('pd-sheet-lock');
     }
     function closeSheet() {
       if (!sheet) return;
       sheet.classList.remove('is-open');
-      if (dim) dim.classList.remove('is-open');
+      if (dim) { dim.classList.remove('is-open'); dim.hidden = true; }
       if (buybar) buybar.classList.remove('pd-buybar--sheet');
       document.body.classList.remove('pd-sheet-lock');
     }

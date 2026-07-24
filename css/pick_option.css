@@ -174,10 +174,15 @@
 }
 
 /* ---------- 모바일 ---------- */
+/* 맛 패널 딤 — 열림 상태(.is-open)일 때만 화면을 덮습니다.
+ * hidden 속성만으로 막으면 스킨 CSS 가 UA 기본 display:none 을 덮어쓸 때
+ * 전체 화면이 가려져 클릭이 막히므로 pointer-events 로 2차 차단합니다. */
 .po-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 10000;
+  display: none; pointer-events: none;
 }
-.po-overlay[hidden] { display: none; }
+.po-overlay.is-open { display: block; pointer-events: auto; }
+.po-overlay[hidden] { display: none !important; pointer-events: none !important; }
 body.po-lock { overflow: hidden; }
 
 @media (max-width: 767px) {

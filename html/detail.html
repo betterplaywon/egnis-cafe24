@@ -1,31 +1,9 @@
 <!--
-============================================================
  [카페24 스킨] 상품 상세 detail.html — 골라담기 통합본
-------------------------------------------------------------
- 원본 기본 스킨의 카페24 모듈/치환변수를 "전부 그대로 보존"한 채
- 레이아웃만 좌(이미지·탭) / 우(정보·옵션·구매)로 재구성했습니다.
-
- ★ 핵심 원칙
-  1. 구매 폼은 카페24가 <div module="product_detail"> 영역을 감싸 자동 생성합니다.
-     → 옵션·수량·선택상품목록·구매버튼은 반드시 이 div "안쪽"에 있어야 합니다.
-       바깥으로 빼내면 옵션값이 전송되지 않아 장바구니/바로구매가 실패합니다.
-  2. 기본 옵션 UI 는 CSS 로 숨기기만 합니다(.pd-cafe24-option).
-     DOM/이벤트를 삭제하면 골라담기의 담기 동작이 깨집니다.
-  3. {$total.total_id} 블록 안의 "상품이 추가되는 영역" 주석과 tbody 는
-     카페24가 참조하므로 삭제하지 마세요.
-
- ★ 이 파일에 포함된 범위
-     product_headcategory / product_detail (전체)
-   그 아래 coupon import 와 product_additional(상세·구매안내·후기·Q&A·관련상품)
-   블록은 원본 스킨 내용을 그대로 이어붙이세요. 파일 맨 아래 표시해 두었습니다.
-
- 로드 순서: detail.css → pick_option.css → (본문) →
-            option_config.js → pick_option.js → page.js
-============================================================
+ 기본 스킨의 모듈/치환변수를 보존한 채 레이아웃만 좌(이미지·탭) /
+ 우(정보·옵션·구매)로 재구성했습니다. 자세한 규칙은 README.md 참고.
 -->
 
-<link rel="stylesheet" href="/web/upload/pickoption/css/detail.css" />
-<link rel="stylesheet" href="/web/upload/pickoption/css/pick_option.css" />
 <style>
   /* 카페24 기본 옵션 영역: 숨김만 (삭제 금지 — 골라담기가 이 안의 버튼을 클릭합니다) */
   .pd-cafe24-option { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
@@ -49,7 +27,11 @@
 </div>
 
 <div module="product_detail" class="pd-page">
+    <!-- detail.css 는 스킨 원본. 우리 스타일은 custom_detail.css 로 이름을 구분해
+         덮어쓰지 않습니다(덮어쓰면 기본 모듈 스타일이 사라져 페이지가 깨집니다). -->
     <!--@css(/css/module/product/detail.css)-->
+    <!--@css(/css/module/product/custom_detail.css)-->
+    <!--@css(/css/module/product/pick_option.css)-->
     <!--
 		$coupon_download_page = /coupon/coupon_productdetail.html
     -->
@@ -205,18 +187,18 @@
 
             <p class="{$naver_mileage_exception_display|display}"><img src="//img.echosting.cafe24.com/skin/base_ko_KR/product/txt_naver.gif" alt="개인결제창을 통한 결제 시 네이버 마일리지 적립 및 사용이 가능합니다." /></p>
 
-            <!-- ============================================================
-              옵션 영역 — 모바일에서는 page.js 가 바텀시트로 동작시킵니다.
-            ============================================================ -->
+            <!-- 옵션 영역 — 모바일에서는 page.js 가 바텀시트로 동작시킵니다. -->
             <div id="pdOptionSheet" class="pd-sheet">
                 <button type="button" class="pd-sheet-handle" aria-label="옵션 닫기"></button>
 
                 <!-- 골라담기 UI 마운트 지점 -->
                 <div id="pickOptionRoot"></div>
 
-                <!-- ⛔ 카페24 기본 옵션 — 화면에서만 감춤. 삭제/주석처리 금지.
-                     골라담기가 이 안의 옵션 버튼을 click() 해서 담기를 수행합니다. -->
-                <table border="1" summary="" module="product_option" class="pd-cafe24-option">
+                <!-- ⛔ 카페24 기본 옵션 — 화면에서만 감춤. 삭제 금지.
+                     골라담기가 이 안의 옵션 버튼을 click() 해서 담기를 수행합니다.
+                     module="product_option" 은 <tbody> 에만 붙입니다. <table> 에도
+                     붙이면 모듈이 중첩되어 카페24가 이 블록을 렌더링에서 제외합니다. -->
+                <table border="1" summary="" class="pd-cafe24-option">
                     <!--
                     $use_per_add_option = yes
                     -->
@@ -365,9 +347,8 @@
                     </div>
                 </div>
 
-                <!-- 카페24 총 상품금액 — 금액이 들어가는 <em> 에 data-cafe24-total 을 달아
-                     page.js 의 무료배송 진행바가 이 값을 그대로 사용합니다.
-                     (수량 "(N개)" 를 금액으로 오독하지 않도록 wrapper 가 아닌 em 에 부착) -->
+                <!-- data-cafe24-total 은 금액 <em> 에만 붙입니다. wrapper 에 붙이면
+                     page.js 가 수량 "(N개)" 를 금액으로 오독합니다. -->
                 <div id="{$total.total_price_id}" class="totalPrice">
                     <p class="ec-base-help txtWarn txt11 {$exclusive_purchase_olny|display}"> 단독구매상품</p>
                     <strong>총 상품금액</strong>(수량) : <span class="{$total.total_cnt}"><strong><em data-cafe24-total>0</em></strong> (0개)</span>
@@ -412,17 +393,9 @@
       </div>
     </main>
 
-    <!-- ============================================================
-      세트상품 / 추가구성상품 모듈
-      ------------------------------------------------------------
-      이 상품에는 쓰이지 않지만, detail.html 은 "모든 상품"에 적용되는
-      스킨이므로 세트·추가구성 상품을 쓰는 다른 상품이 깨지지 않도록
-      원본 블록을 그대로 유지하세요.
-      → 원본 detail.html 의
-         <div class="productSet" module="product_setproduct"> … </div>
-         <div class="productSet additional" module="product_addproduct"> … </div>
-        두 블록을 이 자리에 붙여넣으세요.
-    ============================================================ -->
+    <!-- 세트상품/추가구성상품 모듈 — 이 상품엔 안 쓰지만 detail.html 은 모든 상품에
+         적용되므로, 원본의 product_setproduct / product_addproduct 블록을
+         이 자리에 그대로 붙여넣으세요. -->
 
     <!-- 공급사:판매사정보 -->
     <div class="supplyInfo {$supply_info_display|display}">
@@ -444,13 +417,12 @@
     <button type="button" class="pd-buybar__buy" data-open-sheet data-proxy=".pd-buy-main">바로 구매하기</button>
 </div>
 
-<!-- ============================================================
-  ↓↓↓ 여기부터는 원본 detail.html 내용을 그대로 이어붙이세요 ↓↓↓
-      <!--@import(/coupon/coupon_productdetail.html)-->
-      <div module="product_additional"> … 상세정보/구매안내/후기/Q&A/관련상품 … </div>
-  ↑↑↑ 위 블록들은 수정 없이 원본 그대로 유지 ↑↑↑
-============================================================ -->
+<!-- 여기부터 원본 detail.html 의 쿠폰 import 지시자와 product_additional 모듈
+     (상세정보/구매안내/후기/Q&A/관련상품)을 수정 없이 이어붙이세요.
+     ※ HTML 주석은 중첩되지 않으므로 이 안내문에 예시 마크업을 넣지 마세요. -->
 
-<script src="/web/upload/pickoption/js/option_config.js"></script>
-<script src="/web/upload/pickoption/js/pick_option.js"></script>
-<script src="/web/upload/pickoption/js/page.js"></script>
+<!-- 로드 순서 고정: option_config → pick_option → page -->
+
+<script src="/js/module/product/option_config.js"></script>
+<script src="/js/module/product/pick_option.js"></script>
+<script src="/js/module/product/page.js"></script>

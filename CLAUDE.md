@@ -14,7 +14,7 @@
 | [js/pick_option.js](js/pick_option.js) | 골라담기 렌더링 + 카페24 연동 로직 |
 | [js/page.js](js/page.js) | 탭 전환, 모바일 바텀시트, 합계 표시 동기화 (읽기 전용) |
 | [css/pick_option.css](css/pick_option.css) | 옵션 UI 스타일 |
-| [css/detail.css](css/detail.css) | 페이지 전체 스타일 |
+| [css/custom_detail.css](css/custom_detail.css) | 페이지 전체 스타일 |
 | [html/detail.html](html/detail.html) | 전체 스킨 템플릿 (카페24 모듈 보존) |
 | [html/snippet_detail_pc.html](html/snippet_detail_pc.html), [html/snippet_detail_mobile.html](html/snippet_detail_mobile.html) | 옵션 영역만 이식하는 삽입 스니펫 |
 | [test/](test/) | jsdom 자동 테스트 (몰 업로드 금지) |

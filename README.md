@@ -13,7 +13,7 @@
 | `js/pick_option.js` | 골라담기 렌더링 + 카페24 연동 로직 | ❌ 수정 불필요 |
 | `css/pick_option.css` | 골라담기 UI 스타일 (`:root` 변수로 색상 조정) | 색상만 필요 시 |
 | `html/detail.html` | **페이지 전체 스킨 템플릿** (프로모션바·헤더·GNB·2컬럼·구매바) — ★CAFE24 주석 위치에 모듈/변수 연결 | ⚠️ 스킨에 맞게 **필수 조정** |
-| `css/detail.css` | 페이지 전체 스타일 (헤더/갤러리/탭/우측 패널/모바일 시트·구매바) | 색상만 필요 시 |
+| `css/custom_detail.css` | 페이지 전체 스타일 (헤더/갤러리/탭/우측 패널/모바일 시트·구매바) | 색상만 필요 시 |
 | `js/page.js` | 탭 전환, 모바일 옵션 바텀시트, 합계·무료배송 진행바 **표시 동기화** (카페24 값 읽기 전용) | `FREE_SHIP_GOAL` 만 |
 | `html/snippet_detail_pc.html` | (옵션 영역만 이식할 때 쓰는) PC 삽입 스니펫 | 스킨에 맞게 조정 |
 | `html/snippet_detail_mobile.html` | 모바일 삽입 스니펫 | 스킨에 맞게 조정 |
@@ -22,7 +22,7 @@
 | `test/` | jsdom 자동 테스트 3종 + 텍스트버튼형 픽스처 (몰 업로드 금지) | — |
 
 전체 페이지 스킨의 로드 순서:
-`detail.css → pick_option.css → (본문) → option_config.js → pick_option.js → page.js`
+`(스킨 원본)detail.css → custom_detail.css → pick_option.css → (본문) → option_config.js → pick_option.js → page.js`
 
 ### 자동 테스트
 
@@ -86,22 +86,62 @@ node test/test-page.js        # 페이지 레이아웃·합계 표시 (18건)
   카페24가 참조하므로 그대로 두세요.
 - 하단 모바일 구매바는 `data-proxy` 로 카페24 원본 버튼(`.pd-buy-main` /
   `.pd-cart-main`)을 대신 클릭합니다. 구매 로직을 재구현하지 않습니다.
-- `css/detail.css` 의 헤더·GNB·프로모션바 스타일은 `layout.html` 에 해당 마크업을
+- `css/custom_detail.css` 의 헤더·GNB·프로모션바 스타일은 `layout.html` 에 해당 마크업을
   추가했을 때만 적용됩니다. 옵션 UI 동작과는 무관합니다.
 
 ### 방법 B — 옵션 영역만 이식 (스니펫)
 
-<!-- 1. 카페24 관리자 > 디자인 > **파일업로더**에 `/web/upload/pickoption/` 폴더를 만들고
-   `option_config.js`, `pick_option.js`, `pick_option.css`, 맛 썸네일 이미지를 업로드. -->
-1. PC `detail.html` 에 `html/snippet_detail_pc.html` 내용을 삽입:
-   - CSS `<link>` 는 옵션 영역 위쪽 아무 곳이나
+1. 카페24 관리자 > 디자인 > **스마트디자인 편집창**에 CSS/JS 를 올립니다.
+   ★ **CSS·JS 는 파일업로더(`/web/upload/...`)를 쓰지 않습니다.** 아래 "경로 규칙" 참고.
+
+   | 저장소 파일 | 업로드 위치 / 파일명 |
+   | --- | --- |
+   | `css/pick_option.css` | 편집창 `css/module/product/pick_option.css` |
+   | `css/custom_detail.css` | 편집창 `css/module/product/custom_detail.css` |
+   | `js/option_config.js`, `js/pick_option.js`, `js/page.js` | 편집창 `js/module/product/` |
+   | 맛 썸네일 이미지 | 파일업로더 `web > upload > pick_option` |
+
+2. PC `detail.html` 에 `html/snippet_detail_pc.html` 내용을 삽입:
+   - `<!--@css(/css/module/product/pick_option.css)-->` 는 옵션 영역 위쪽 아무 곳이나
    - `<div id="pickOptionRoot"></div>` 는 **기본 옵션 영역 바로 아래,
      선택상품 목록(#totalProducts) 위**
-   - JS 2개는 페이지 하단에, 반드시 `option_config.js → pick_option.js` 순서
+   - JS 3개는 페이지 하단에, 반드시
+     `option_config.js → pick_option.js → page.js` 순서
 3. 모바일 스킨은 `html/snippet_detail_mobile.html` 참고. 반응형 단일 스킨이면 PC 삽입만으로 동작.
 4. 기본 옵션 UI 는 스니펫의 `<style>` 로 **display:none 처리만** 합니다.
    DOM/이벤트를 삭제하면 구매 흐름이 깨지므로 절대 제거하지 않습니다.
    `#totalProducts`(선택상품 목록), 수량, 총금액, 구매 버튼 영역은 숨기지 않습니다.
+
+## 2-1. 경로 규칙 (필수)
+
+**CSS·JS 는 스토어프론트 경로만 사용합니다. 파일업로더 경로는 사용하지 않습니다.**
+
+파일업로더는 스킨과 다른 도메인(`ecimg.cafe24img.com`)으로 서빙되어
+상품 상세페이지에서 CSS·JS 가 로드되지 않습니다. 실제로 이 경로를 쓴 동안
+스타일과 스크립트가 전부 404 였고 UI 가 깨졌습니다.
+
+| 종류 | 사용할 경로 | 로드 방식 |
+| --- | --- | --- |
+| CSS | `/css/module/product/*.css` | `<!--@css(...)-->` 지시자 |
+| JS | `/js/module/product/*.js` | `<script src="...">` |
+| 이미지 | `/web/upload/pick_option/...` | 파일업로더 (예외 — 이미지만) |
+
+- ❌ `<link rel="stylesheet" href="/web/upload/...">`
+- ❌ `<script src="/web/upload/...">`
+- ✅ `<!--@css(/css/module/product/pick_option.css)-->`
+- ✅ `<script src="/js/module/product/pick_option.js"></script>`
+
+CSS 는 `<link>` 대신 `@css` 지시자를 씁니다. 카페24가 스킨 버전에 맞는
+캐시 파라미터를 붙여 주므로 수정 후 반영이 확실합니다.
+
+⚠️ `/css/module/product/detail.css` 는 **스킨 원본 파일**입니다.
+이 저장소의 `css/custom_detail.css` 는 이름 그대로
+`/css/module/product/custom_detail.css` 에 업로드해 원본을 덮어쓰지 않도록 합니다.
+
+원본 `detail.css` 를 우리 CSS 로 덮어쓰면 카페24 기본 모듈
+(`product_image`, `product_detaildesign`, `product_action`, `ec-base-*` 등)의
+스타일이 통째로 사라져 상세페이지가 깨집니다. 실제로 이 문제가 발생했고,
+스킨 원본 복원 + 파일명 분리로 해결했습니다.
 
 ## 3. option_config.js 설정 항목
 
@@ -121,7 +161,7 @@ node test/test-page.js        # 페이지 레이아웃·합계 표시 (18건)
 | 키 | 설명 |
 | --- | --- |
 | `name` / `meta` | 표시명, 부가정보(kcal·단백질) |
-| `img` | 썸네일 경로 (`/web/upload/pickoption/...`) |
+| `img` | 썸네일 경로 (`/web/upload/pick_option/...`) |
 | `badge` | 이름 위 강조 문구 (예: `신제품 출시!`) |
 | `soldOut` | `true` 면 품절 처리(비활성) |
 
