@@ -61,6 +61,8 @@
 - 조치(커밋 예정): `js/pick_option.js` 진단 판정을
   `closest('[module="product_detail"], .xans-product-detail')` 로 확장.
 - 재검증: `pick_option.js` 업로드 후 diagnose 2번 ✅.
+  ⚠️ 현재도 2번 ❌ 로 보이면 = `.xans-product-detail` 판정을 넣은 최신 `pick_option.js`
+  (커밋 `5fd5e3e`)가 아직 업로드 안 된 것. CSS(✅)만 반영된 이전 버전이 도는 상태.
 
 ### #D. 카페24 옵션 컨트롤 미탐지 (`{$form.option}` 빈 값) — ✅ 원인 확정·수정 (스킨 마크업)
 
@@ -71,13 +73,12 @@
     → `<table>` 에서 module 을 빼서 카페24가 옵션을 **바인딩하지 않음** → `{$form.option}`·
     `{$option_name}` 빈 값 → 옵션 UI 미출력 → 담기 불가.
   - 이전 코드 주석의 "table 에 module 붙이면 렌더 제외" 는 **틀린 설명이었음**(순정이 반증).
-- 조치(커밋 예정): 옵션 `<table>` 에 `module="product_option"` 추가(순정과 동일), 주석 정정.
-- 재검증(업로드 후):
-  - [ ] 스니펫으로 `selectCount ≥ 1` 또는 `10개입_1` 텍스트버튼 존재 확인.
-  - [ ] `PickOption.diagnose()` 3번(옵션 컨트롤) ✅.
-  - [ ] 카드 담기 → 선택상품 행 생성 동작 확인.
-  - [ ] 숨김(`.pd-cafe24-option` clip) 상태에서도 버튼이 DOM 에 남아 담기가 되는지
-        (안 되면 snippet 경고대로 숨김 방식 조정 — 먼저 숨김 없이 렌더 확인 권장).
+- 조치(커밋 `6acfbe1`): 옵션 `<table>` 에 `module="product_option"` 추가(순정과 동일), 주석 정정.
+- 재검증 결과:
+  - [x] diagnose 3번(옵션 컨트롤) **✅** — 옵션값 8개(`10개입_1…100개입_2`) 전부 인식,
+        표시방식 텍스트버튼형(버튼 click), 대상 `<a>`, 목록 `div#totalProducts`.
+  - [ ] 카드 담기 → 선택상품 행 생성 동작 확인 (다음 단계).
+  - [ ] 숨김(`.pd-cafe24-option` clip) 상태에서도 `.click()` 으로 담기가 되는지 확인.
 
 <details><summary>(과거 기록) 오판했던 가설 — 상품 설정 원인설</summary>
 
