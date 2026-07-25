@@ -62,7 +62,29 @@
   `closest('[module="product_detail"], .xans-product-detail')` 로 확장.
 - 재검증: `pick_option.js` 업로드 후 diagnose 2번 ✅.
 
-### #D. 카페24 옵션 컨트롤 미탐지 (`{$form.option}` 빈 값) — 🔴 원인 확정 (상품 설정)
+### #D. 카페24 옵션 컨트롤 미탐지 (`{$form.option}` 빈 값) — ✅ 원인 확정·수정 (스킨 마크업)
+
+- **진짜 원인(순정 detail.html 대조로 확정): 옵션 `<table>` 에서 `module="product_option"` 누락.**
+  - 베이직 순정: `<table ... module="product_option"> … <tbody module="product_option">`
+    → `module` 을 **`<table>` 과 `<tbody>` 양쪽**에 붙인다.
+  - 우리 detail.html: `<table class="pd-cafe24-option">` (module 없음) + `<tbody module="product_option">`.
+    → `<table>` 에서 module 을 빼서 카페24가 옵션을 **바인딩하지 않음** → `{$form.option}`·
+    `{$option_name}` 빈 값 → 옵션 UI 미출력 → 담기 불가.
+  - 이전 코드 주석의 "table 에 module 붙이면 렌더 제외" 는 **틀린 설명이었음**(순정이 반증).
+- 조치(커밋 예정): 옵션 `<table>` 에 `module="product_option"` 추가(순정과 동일), 주석 정정.
+- 재검증(업로드 후):
+  - [ ] 스니펫으로 `selectCount ≥ 1` 또는 `10개입_1` 텍스트버튼 존재 확인.
+  - [ ] `PickOption.diagnose()` 3번(옵션 컨트롤) ✅.
+  - [ ] 카드 담기 → 선택상품 행 생성 동작 확인.
+  - [ ] 숨김(`.pd-cafe24-option` clip) 상태에서도 버튼이 DOM 에 남아 담기가 되는지
+        (안 되면 snippet 경고대로 숨김 방식 조정 — 먼저 숨김 없이 렌더 확인 권장).
+
+<details><summary>(과거 기록) 오판했던 가설 — 상품 설정 원인설</summary>
+
+이전엔 옵션 미출력을 "독립 선택형이라 `{$form.option}` 로 렌더 안 됨(상품 설정 특성)" 으로
+추정했으나, 순정 스킨에선 같은 상품(독립선택형)의 옵션이 정상 렌더됨을 확인 → **스킨 마크업
+문제**로 확정됨. 독립선택형 여부는 원인이 아니었다.
+</details>
 
 - 증상: diagnose 3번 ❌. `optionValues {}`, `selectCount: 0`,
   `.xans-product-option` tbody 가 `<th></th><td><p class="value"></p>` 로 **완전히 빔**

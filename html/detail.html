@@ -156,9 +156,10 @@
 
                 <!-- ⛔ 카페24 기본 옵션 — 화면에서만 감춤. 삭제 금지.
                      골라담기가 이 안의 옵션 버튼을 click() 해서 담기를 수행합니다.
-                     module="product_option" 은 <tbody> 에만 붙입니다. <table> 에도
-                     붙이면 모듈이 중첩되어 카페24가 이 블록을 렌더링에서 제외합니다. -->
-                <table border="1" summary="" class="pd-cafe24-option">
+                     ★ 베이직 순정과 동일하게 module="product_option" 을 <table> 과 <tbody>
+                     양쪽에 붙입니다. <table> 에서 빼면 카페24가 옵션을 바인딩하지 않아
+                     {$form.option}·{$option_name} 이 빈 값이 됩니다(실제로 이 누락으로 옵션 미출력). -->
+                <table border="1" summary="" class="pd-cafe24-option" module="product_option">
                     <!--
                     $use_per_add_option = yes
                     -->
