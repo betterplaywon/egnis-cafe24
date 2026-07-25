@@ -565,8 +565,10 @@
         '@css(/css/module/product/pick_option.css) 지시자 / 경로 확인');
 
       var buyBtn = firstBuyButton();
-      add('구매 폼 래퍼 (module=product_detail)',
-        !!(buyBtn && buyBtn.closest && buyBtn.closest('[module="product_detail"]')),
+      /* 카페24는 module="product_detail" 를 처리하며 module 속성을 제거하고
+       * class="xans-product-detail" 로 바꾼다. 두 형태를 모두 인정한다. */
+      add('구매 폼 래퍼 (product_detail)',
+        !!(buyBtn && buyBtn.closest && buyBtn.closest('[module="product_detail"], .xans-product-detail')),
         '옵션·수량·구매버튼이 <div module="product_detail"> 안에 있어야 옵션값이 전송됩니다');
 
       add('카페24 옵션 컨트롤 탐지', insp.mode !== 'none',

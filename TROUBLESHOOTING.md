@@ -48,31 +48,37 @@
   - `js/pick_option.js`: 진단 CSS 판정을 배경 대신 `.po-card__btn` 의 `display:flex` 로 변경.
 - 재검증: 3파일 업로드 후 diagnose 1번이 ✅ + 선택완료 버튼이 검정으로 보이면 완료.
 
-### #C. diagnose "구매 폼 래퍼 ❌" — ✅ 수정 완료(내 회귀)
+### #C. diagnose "구매 폼 래퍼 ❌" — ✅ 원인 규명(진단 오탐)
 
-- 증상: diagnose 2번 항목 ❌.
-- 원인: detail.html 을 시안대로 리스타일하며 원본 버튼 클래스(`btnSubmit`/`btnNormal.sizeL`)를
-  제거했는데, `option_config.js > cafe24.buyButtons` 가 그 클래스로 버튼을 찾고 있었음.
-  → 버튼 미탐지 → 구매 폼 래퍼 판정 실패 + 미선택 가드(토스트) 미부착.
-- 조치(커밋 `a293bb0`): `buyButtons` 후보 선두에
-  `.pd-actions .pd-actions__buy, .pd-actions .pd-actions__cart` 추가(기본 스킨 클래스는 폴백 유지).
-  버튼에 원본 클래스를 되붙이지 않은 이유 = detail.css 가 시안 스타일을 덮어쓰기 때문(명시도).
-- 재검증: `option_config.js` 업로드 후 diagnose 2번 ✅.
+- 증상: diagnose 2번 항목 ❌. 콘솔 확인 결과 `buyBtnFound:true` + `buyBtnInDetail:false`.
+- 1차 원인(수정 `a293bb0`): 시안 리스타일로 원본 버튼 클래스(`btnSubmit`/`btnNormal.sizeL`)를
+  제거해 `buyButtons` 가 버튼을 못 찾던 문제 → `buyButtons` 선두에
+  `.pd-actions .pd-actions__buy, .pd-actions .pd-actions__cart` 추가로 **탐지는 복구**됨.
+- 2차 원인(진짜 오탐): 버튼은 찾았지만 판정이 `closest('[module="product_detail"]')` 를 봤는데,
+  **카페24가 `module="product_detail"` 속성을 처리하며 제거하고 `class="xans-product-detail"`
+  로 바꾼다**(모든 `module=*` 이 `xans-product-*` 클래스로 치환됨). 그래서 속성으로는 못 찾음.
+  버튼은 폼 안에 정상적으로 있음 = 기능 문제 아님.
+- 조치(커밋 예정): `js/pick_option.js` 진단 판정을
+  `closest('[module="product_detail"], .xans-product-detail')` 로 확장.
+- 재검증: `pick_option.js` 업로드 후 diagnose 2번 ✅.
 
-### #D. 카페24 옵션 컨트롤 미탐지 (`{$form.option}` 빈 값) — ⏳ 진행 중 (핵심)
+### #D. 카페24 옵션 컨트롤 미탐지 (`{$form.option}` 빈 값) — 🔴 원인 확정 (상품 설정)
 
-- 증상: diagnose 3번 ❌. `optionValues {}`, `select` 0개,
-  `.pd-cafe24-option td` innerHTML = `<p class="value"></p>` (즉 `{$form.option}` 이 **완전히 빈 값**).
-- 확정: 상품/옵션 데이터는 정상(위 "확정된 사실"). 따라서 원인은
-  **카페24가 이 옵션 UI(독립 선택형 텍스트버튼)를 스킨 마크업에서 렌더하지 않는 것**.
-- 가설(둘 중 하나로 갈림 — 아래 진단 명령 결과로 확정):
-  1. 어딘가에 `10개입_1` 버튼이 렌더돼 있는데 스킨 구조가 바뀌어 브릿지 스캔이 놓침
-     → 셀렉터/스캔 보정.
-  2. `{$form.option}` 이 계속 비어 있음 → **독립 선택형**은 표준 조합형 옵션 테이블
-     마크업으로는 렌더가 안 되는 것 → 독립 선택형에 맞는 옵션 모듈 블록으로 정면 수정.
-- 대기 중 확인:
-  - [ ] 수정 3파일 재업로드 후 diagnose (아래 명령 ①)
-  - [ ] 옵션 모듈 실제 렌더 HTML 덤프 (아래 명령 ②)
+- 증상: diagnose 3번 ❌. `optionValues {}`, `selectCount: 0`,
+  `.xans-product-option` tbody 가 `<th></th><td><p class="value"></p>` 로 **완전히 빔**
+  (`{$option_name}`·`{$form.option}` 둘 다 빈 값), 페이지 어디에도 `10개입_1` 요소 없음
+  (`tenPackEls: []`).
+- **확정 원인: 관리자 옵션 구성방식 = "독립 선택형".**
+  독립 선택형은 `{$form.option}`(단일 select/텍스트버튼)으로 렌더되지 않는다.
+  그러나 골라담기 브릿지는 **"개입수 옵션값(10개입_1…)을 선택 → 카페24가 선택상품 행 추가"**
+  하는 **조합형(일체선택형)** 모델로 설계됨(suffix `_1/_2` 로 다중 담기).
+- 조치(사용자, 관리자 작업):
+  - [ ] 상품 > 옵션/재고 > **옵션 구성방식을 "조합 일체선택형" 으로 변경** (옵션스타일 텍스트버튼 유지).
+  - [ ] 변경 후 콘솔 스니펫 재실행 → `selectCount ≥ 1` 이고 `xansOption[0]` 에
+        `<select>` + `10개입_1` 값이 보이면 성공. 이어서 diagnose 3번 ✅ + 담기 동작 확인.
+- 부수 확인(품목 데이터): 30개입_2 추가금액이 141,000(= _1 의 2배)로 보임.
+  골라담기 설계상 `_1`·`_2` 는 **같은 개입수를 2번 담기 위한 중복 옵션값**이라
+  **둘 다 같은 추가금액(예 70,500)** 이어야 한다. 다르면 두 번째 담기 금액이 어긋난다. → 사용자 확인 필요.
 
 ---
 
