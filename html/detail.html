@@ -93,9 +93,14 @@
             </nav>
 
             <div class="pd-content">
-                <!-- ★CAFE24: 상품 상세설명(에디터/이미지) 영역.
-                     관리자 > 상품 > 상세설명 내용이 이 자리에 렌더됩니다.
-                     스킨 원본의 상세설명 출력 블록을 이 위치에 그대로 두세요. -->
+                <!-- ★CAFE24: 상품 상세설명(에디터/이미지) 영역. 탭 바로 아래에 노출됩니다.
+                     상세설명은 product_additional 모듈의 {$product_detail} 로 출력합니다
+                     (좌측 갤러리 product_image 처럼 product_detail 안에 모듈 중첩 가능).
+                     ※ 하단에 원본 product_additional(후기·Q&A·관련상품)을 이어붙일 때는
+                        그쪽 {$product_detail} 를 제거해 상세설명 중복 출력을 막으세요. -->
+                <div module="product_additional">
+                    {$product_detail}
+                </div>
             </div>
         </section>
 
@@ -394,7 +399,10 @@
 </div>
 
 <!-- 여기부터 원본 detail.html 의 쿠폰 import 지시자와 product_additional 모듈
-     (상세정보/구매안내/후기/Q&A/관련상품)을 수정 없이 이어붙이세요.
+     (구매안내/후기/Q&A/관련상품)을 이어붙이세요.
+     ※ 상세설명({$product_detail})은 위 .pd-content 에서 이미 출력하므로, 여기에
+        붙이는 원본 product_additional 의 #prdDetail 안 {$product_detail} 는
+        제거해 중복 출력을 막으세요.
      ※ HTML 주석은 중첩되지 않으므로 이 안내문에 예시 마크업을 넣지 마세요. -->
 
 <!-- 로드 순서 고정: option_config → pick_util → cafe24_bridge → pick_option → page -->
