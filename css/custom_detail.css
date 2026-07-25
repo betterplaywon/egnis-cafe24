@@ -20,10 +20,9 @@
 }
 
 /* ---------- 베이스 ---------- */
-html, body { margin: 0; padding: 0; }
-/* ★ 카페24 스킨에서는 detail.html 이 <body> 를 포함하지 않으므로
- * (body 는 layout.html 소관) 래퍼 div 에 .pd-page 를 걸어도 되도록
- * body 한정을 풀어 둡니다. 폰트·색은 하위로 상속됩니다. */
+/* ★ body 는 layout.html 소관이므로 여기서 건드리지 않습니다.
+ * 전역 html/body 규칙을 두면 상세페이지뿐 아니라 레이아웃 전체의 여백이
+ * 무너져 콘텐츠가 밀려 잘립니다. 우리 스타일은 .pd-page 아래로만 한정합니다. */
 .pd-page {
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
   color: var(--pg-ink); background: #fff; line-height: 1.45;

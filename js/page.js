@@ -4,19 +4,21 @@
  *  - 모바일 옵션 바텀시트 열기/닫기
  *  - 무료배송 진행바 · "총 n세트 / 총 n원" 표시 동기화
  *    (금액 계산은 카페24 값을 "읽기만" 하며 어떤 구매 로직도 대체하지 않음)
- * 로드 순서: option_config.js → pick_option.js → page.js
+ * 로드 순서: option_config.js → pick_util.js → cafe24_bridge.js
+ *            → pick_option.js → page.js
  * ============================================================ */
 (function () {
   'use strict';
 
-  var FREE_SHIP_GOAL = 40000; // 무료배송 기준 금액(원). 몰 정책에 맞게 수정
-
-  function ready(fn) {
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
-    else fn();
+  var U = window.PickOption && window.PickOption.utils;
+  if (!U) {
+    console.error('[page] pick_util.js 가 먼저 로드되어야 합니다.');
+    return;
   }
 
-  ready(function () {
+  var FREE_SHIP_GOAL = 40000; // 무료배송 기준 금액(원). 몰 정책에 맞게 수정
+
+  U.ready(function () {
     /* ---------- 1. 탭 ---------- */
     var tabs = document.querySelectorAll('.pd-tabs__tab');
     tabs.forEach(function (tab) {
@@ -93,16 +95,8 @@
      * 그 텍스트를 우선 사용합니다. */
     var CFG = window.PICK_OPTION_CONFIG || {};
     var rowsSel = (CFG.cafe24 && CFG.cafe24.productRows) || ['#totalProducts .option_products'];
-    var container = null;
-    for (var i = 0; i < rowsSel.length; i++) {
-      try { container = document.querySelector(rowsSel[i]); } catch (e) {}
-      if (container) break;
-    }
-
-    function parsePrice(text) {
-      var m = String(text || '').replace(/[,\s]/g, '').match(/(\d{3,})원?/);
-      return m ? parseInt(m[1], 10) : 0;
-    }
+    var container = U.findFirst(rowsSel);
+    var parsePrice = U.parsePrice;
 
     function updateSummary() {
       var setsEl = document.querySelector('[data-pd-total-sets]');

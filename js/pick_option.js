@@ -19,10 +19,16 @@
 
   var TAG = '[pick-option]';
   var CFG = window.PICK_OPTION_CONFIG;
+  var U = window.PickOption && window.PickOption.utils;
 
   /* ---------- 0. 부트 가드 ---------- */
   if (!CFG) {
     console.error(TAG + ' option_config.js 가 먼저 로드되어야 합니다.');
+    return;
+  }
+  if (!U) {
+    console.error(TAG + ' pick_util.js 가 먼저 로드되어야 합니다. ' +
+      '로드 순서: option_config.js → pick_util.js → cafe24_bridge.js → pick_option.js → page.js');
     return;
   }
   function boot() {
@@ -33,42 +39,18 @@
     }
     init(root);
   }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot);
-  } else {
-    boot();
-  }
+  U.ready(boot);
 
-  /* ---------- 유틸 ---------- */
+  /* ---------- 유틸 (공용 헬퍼는 pick_util.js) ---------- */
+  var qsFirst = U.findFirst;
+  var fmt = U.fmt;
+  var money = U.money;
+  var el = U.el;
+  var escapeHtml = U.escapeHtml;
+  var classOf = U.classOf;
+
   function log() {
     if (CFG.debug) console.log.apply(console, [TAG].concat([].slice.call(arguments)));
-  }
-  function qsFirst(candidates, ctx) {
-    var list = Array.isArray(candidates) ? candidates : [candidates];
-    for (var i = 0; i < list.length; i++) {
-      try {
-        var el = (ctx || document).querySelector(list[i]);
-        if (el) return el;
-      } catch (e) { /* 잘못된 셀렉터 무시 */ }
-    }
-    return null;
-  }
-  function fmt(tpl, map) {
-    return String(tpl).replace(/\{(\w+)\}/g, function (_, k) {
-      return map[k] != null ? map[k] : '';
-    });
-  }
-  function money(n) { return Number(n).toLocaleString('ko-KR') + '원'; }
-  function el(tag, cls, html) {
-    var e = document.createElement(tag);
-    if (cls) e.className = cls;
-    if (html != null) e.innerHTML = html;
-    return e;
-  }
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"]/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
-    });
   }
 
   /* ============================================================
@@ -159,10 +141,6 @@
     function inRowsArea(node) {
       if (rowsContainer && rowsContainer.contains(node)) return true;
       return !!(node.closest && node.closest(ROWS_AREA_SEL));
-    }
-    function classOf(node) {
-      var c = node.className;
-      return String(c && c.baseVal != null ? c.baseVal : (c || ''));
     }
     function isDisabledLike(node) {
       if (node.disabled) return true;
@@ -835,7 +813,9 @@
       });
       return out;
     }
-    window.PickOption = {
+    /* 네임스페이스에 메서드를 "추가" 합니다. 재대입하면 pick_util.js 가 붙인
+     * PickOption.utils(및 이후 cafe24_bridge 가 붙일 .bridge)가 지워집니다. */
+    var API = {
       getState: getState,
       rescan: function () {
         learnRowsContainer();
@@ -883,6 +863,7 @@
         return info;
       }
     };
+    Object.keys(API).forEach(function (k) { window.PickOption[k] = API[k]; });
 
     root.insertBefore(section, overlay);
     log('초기화 완료');
