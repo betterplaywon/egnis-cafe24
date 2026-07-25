@@ -7,6 +7,7 @@
 - 프로젝트 규칙 → [CLAUDE.md](CLAUDE.md)
 - 설치·설정 가이드 → [README.md](README.md)
 - 몰 검증 항목 → [QA_CHECKLIST.md](QA_CHECKLIST.md)
+- 몰 문제해결 로그(원인·조치·재확인 방지) → [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
 최종 갱신: 2026-07-25
 
