@@ -13,17 +13,27 @@
 
 ## ▶ 지금 상태 / 다음 시작점 (새 세션은 여기부터)
 
-- **Phase 1(JS 분리) + Phase 2·3(detail.html·custom_detail.css 시안 재작성) 완료.**
-  JS 5파일 구조: `option_config → pick_util → cafe24_bridge → pick_option → page`.
-  detail.html / snippet 2종 모두 **5파일 로드 순서로 갱신 완료**.
-- detail.html = 시안 우측 패널 마크업 + 실제 카페24 보호 DOM 병합, 탭은 정적 라벨.
-  custom_detail.css = 죽은 코드(헤더/GNB/프로모션바/플로팅) 제거 + 실제 `#totalProducts`
-  `<table>` 카드화(`tr:has(p.product)`). 상세 내역은 [REFACTOR.md](REFACTOR.md) Phase 2·3.
-- **아직 몰 검증 전.** 로컬 자동 테스트 없음(§2 결정). 테스트몰에 올리고
-  `PickOption.diagnose()` + PC(1440)/모바일(390) 수동 시나리오(§6)로 확인해야 함.
-  특히 **선택카드 `:has()` 렌더**와 **모바일 2단 시트**를 실제 DOM 에서 눈으로 확인.
-- **다음 작업 = Phase 4 (문서 정리) + 몰 QA 반영.** 시안과 실제 렌더 차이가 나오면
-  custom_detail.css 의 `#totalProducts` 카드 규칙을 실제 마크업 기준으로 조정.
+- **Phase 1~3 완료 + 몰 검증 진행 중.** 몰 이슈 상세는 [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+- **최근 최대 고비 해결:** 옵션이 몰에서 안 뜨던 근본 원인 = 옵션 `<table>` 에서
+  `module="product_option"` 누락(베이직 순정은 `<table>`·`<tbody>` 양쪽에 붙임). 복구 후
+  `PickOption.diagnose()` 옵션 컨트롤 ✅, 옵션값 8개(`10개입_1…100개입_2`) 텍스트버튼 인식.
+  (커밋 `6acfbe1`. `html/before_detail.html` 은 이제 **베이직 순정 참고본**.)
+- **현재 diagnose 5/6 ✅.** 남은 `#2 구매 폼 래퍼 ❌` 는 코드로 이미 해결(커밋 `5fd5e3e`,
+  `.xans-product-detail` 인정) — **몰에 최신 `pick_option.js` 재업로드만 하면 ✅**.
+
+### ▶▶ 다음 세션 즉시 할 일 (순서대로)
+1. 몰에 **최신 `js/pick_option.js` 재업로드** → `diagnose()` 6개 전부 ✅ 확인.
+2. **실제 담기 동작 검증** (아직 미확인): 30개입 카드 → 맛 30개 → 선택완료 →
+   `PickOption.rows().length ≥ 1` + 선택한 옵션 카드/총세트/무료배송바 갱신 확인.
+   - 안 되면 = `.pd-cafe24-option` 의 `clip` 숨김이 카페24 버튼 클릭을 막는 경우.
+     QA 권장대로 잠깐 숨김 풀어 담기 확인 후, `.click()` 에 지장 없는 숨김으로 조정.
+3. 담기 되면 → **PC 선택카드(`:has()`) 렌더**·**모바일 2단 시트** 육안 검증(§6 시나리오).
+4. 마지막 Phase 4 문서 정리(README/QA_CHECKLIST 최신화).
+
+### 재업로드 필요 파일 (몰 반영 대상)
+- 이번 세션 수정: `js/option_config.js`, `css/pick_option.css`, `js/pick_option.js`,
+  `css/custom_detail.css`, `html/detail.html`, `html/snippet_detail_*.html`.
+  → 몰에 최신본이 다 올라갔는지 확인(특히 **`pick_option.js` 최신본**).
 
 ---
 
