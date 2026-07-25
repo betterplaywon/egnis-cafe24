@@ -10,6 +10,18 @@
 
 최종 갱신: 2026-07-25
 
+## ▶ 지금 상태 / 다음 시작점 (새 세션은 여기부터)
+
+- **Phase 1(JS 책임 분리) 완료.** 작업 트리 clean, 마지막 커밋 `1a80d7a`.
+- JS 5파일 구조 확정: `option_config → pick_util → cafe24_bridge → pick_option → page`.
+  전역 노출은 `window.PickOption` 1개(`utils`/`bridge`/공개 메서드).
+- **아직 검토 전.** 사용자가 리팩토링 결과물을 확인하는 단계. 필요 시 테스트몰에
+  5파일 올리고 콘솔에서 `PickOption.diagnose()` 로 6개 점검 확인.
+- **다음 작업 = Phase 2 (html/detail.html 신규 작성).** ⚠️ detail.html 은 아직
+  옛 3파일 스크립트(`option_config → pick_option → page`)를 로드 중 —
+  Phase 2 에서 **5파일 로드 순서로 갱신 필수**. snippet_detail_*.html 도 동일.
+- 단계별 상세는 [REFACTOR.md](REFACTOR.md), 남은 계획은 아래 §3 진행 상황 표 참고.
+
 ---
 
 ## 1. 왜 재구현하는가
