@@ -15,7 +15,9 @@
     return;
   }
 
-  var FREE_SHIP_GOAL = 40000; // 무료배송 기준 금액(원). 몰 정책에 맞게 수정
+  /* 무료배송 기준 금액은 option_config.js 의 freeShipGoal 을 사용합니다.
+   * (값=설정 / 동작=로직 경계. config 미로드 시에만 폴백 40000) */
+  var FREE_SHIP_GOAL = (window.PICK_OPTION_CONFIG && window.PICK_OPTION_CONFIG.freeShipGoal) || 40000;
 
   U.ready(function () {
     /* ---------- 1. 모바일 옵션 바텀시트 ---------- */

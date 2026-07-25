@@ -89,6 +89,32 @@
     /* ============================================================
      * RENDER — 카드 목록
      * ============================================================ */
+    function cardByKey(key) {
+      return CFG.counts.filter(function (c) { return c.key === key; })[0] || null;
+    }
+    /* 개입수 카드 하나의 마크업 (반복 조립을 헬퍼로 통일) */
+    function renderCard(c) {
+      var li = el('li', 'po-card');
+      li.dataset.key = c.key;
+      var badgeHtml = c.badge
+        ? '<span class="po-card__badge po-card__badge--' + c.badge.type + '">' + escapeHtml(c.badge.text) + '</span>'
+        : '';
+      li.innerHTML =
+        '<button type="button" class="po-card__btn" role="radio" aria-checked="false">' +
+        '  <span class="po-card__radio" aria-hidden="true"></span>' +
+        '  <span class="po-card__label">' + escapeHtml(c.label) + '</span>' +
+        '  <span class="po-card__info">' +
+        '    <span class="po-card__priceline">' +
+        '      <strong class="po-card__price">' + money(c.price) + '</strong>' +
+        '      <span class="po-card__discount">(' + escapeHtml(c.discount) + ')</span>' +
+             badgeHtml +
+        '    </span>' +
+        '    <span class="po-card__unit">' + escapeHtml(c.unitPrice) + '</span>' +
+        '  </span>' +
+        '</button>';
+      return li;
+    }
+
     root.classList.add('po');
     root.innerHTML = '';
 
@@ -110,29 +136,16 @@
 
     var cardEls = {};
     CFG.counts.forEach(function (c) {
-      var li = el('li', 'po-card');
-      li.dataset.key = c.key;
-      var badgeHtml = c.badge
-        ? '<span class="po-card__badge po-card__badge--' + c.badge.type + '">' + escapeHtml(c.badge.text) + '</span>'
-        : '';
-      li.innerHTML =
-        '<button type="button" class="po-card__btn" role="radio" aria-checked="false">' +
-        '  <span class="po-card__radio" aria-hidden="true"></span>' +
-        '  <span class="po-card__label">' + escapeHtml(c.label) + '</span>' +
-        '  <span class="po-card__info">' +
-        '    <span class="po-card__priceline">' +
-        '      <strong class="po-card__price">' + money(c.price) + '</strong>' +
-        '      <span class="po-card__discount">(' + escapeHtml(c.discount) + ')</span>' +
-             badgeHtml +
-        '    </span>' +
-        '    <span class="po-card__unit">' + escapeHtml(c.unitPrice) + '</span>' +
-        '  </span>' +
-        '</button>';
-      li.querySelector('.po-card__btn').addEventListener('click', function () {
-        onCardClick(c);
-      });
+      var li = renderCard(c);
       cardList.appendChild(li);
       cardEls[c.key] = li;
+    });
+    /* 이벤트 위임: 카드마다 리스너를 붙이지 않고 목록에 한 번만 (config 규칙) */
+    cardList.addEventListener('click', function (e) {
+      var li = e.target.closest ? e.target.closest('.po-card') : null;
+      if (!li || !cardList.contains(li)) return;
+      var cfg = cardByKey(li.dataset.key);
+      if (cfg) onCardClick(cfg);
     });
 
     /* ============================================================
@@ -167,45 +180,63 @@
       document.body.classList.toggle('po-lock', asSheet);
     });
 
+    /* 패널 = 헤드 + 맛 목록 + 푸터. 각 부분을 렌더 헬퍼로 나눠 조립합니다. */
     function buildPanel(countCfg) {
       panelWrap.innerHTML = '';
       var sheet = useSheet();
       panelWrap.classList.toggle('po-panel--sheet', sheet);
+      panelWrap.appendChild(renderPanelHead(countCfg, sheet));
+      panelWrap.appendChild(renderFlavorList(countCfg));
+      panelWrap.appendChild(renderPanelFoot(countCfg));
+      updatePanel(countCfg);
+    }
 
+    function renderPanelHead(countCfg, sheet) {
       var head = el('div', 'po-panel__head',
         (sheet ? '<span class="po-panel__grab" aria-hidden="true"></span>' : '') +
         '<strong class="po-panel__title">' + escapeHtml(fmt(CFG.texts.flavorTitle, { label: countCfg.label })) + '</strong>' +
         '<button type="button" class="po-panel__close" aria-label="닫기">&times;</button>');
       head.querySelector('.po-panel__close').addEventListener('click', closePanel);
-      panelWrap.appendChild(head);
+      return head;
+    }
 
+    /* 맛 항목 하나의 마크업 (반복 조립을 헬퍼로 통일) */
+    function renderFlavor(f) {
+      var li = el('li', 'po-flavor' + (f.soldOut ? ' is-soldout' : ''));
+      li.dataset.flavor = f.id;
+      li.innerHTML =
+        '<span class="po-flavor__thumb">' +
+        (f.img ? '<img src="' + escapeHtml(f.img) + '" alt="" loading="lazy" onerror="this.remove()">' : '') +
+        (f.soldOut ? '<span class="po-flavor__soldout">' + escapeHtml(CFG.texts.soldOutBadge) + '</span>' : '') +
+        '</span>' +
+        '<span class="po-flavor__info">' +
+        (f.badge ? '<em class="po-flavor__badge">' + escapeHtml(f.badge) + '</em>' : '') +
+        '  <strong class="po-flavor__name">' + escapeHtml(f.name) + '</strong>' +
+        '  <span class="po-flavor__meta">' + escapeHtml(f.meta || '') + '</span>' +
+        '</span>' +
+        '<span class="po-stepper">' +
+        '  <button type="button" class="po-stepper__btn po-stepper__btn--minus" data-step="-1" aria-label="빼기"' + (f.soldOut ? ' disabled' : '') + '>&minus;</button>' +
+        '  <span class="po-stepper__value" aria-live="polite">0</span>' +
+        '  <button type="button" class="po-stepper__btn po-stepper__btn--plus" data-step="1" aria-label="더하기"' + (f.soldOut ? ' disabled' : '') + '>+</button>' +
+        '</span>';
+      return li;
+    }
+
+    function renderFlavorList(countCfg) {
       var list = el('ul', 'po-flavors');
-      CFG.flavors.forEach(function (f) {
-        var li = el('li', 'po-flavor' + (f.soldOut ? ' is-soldout' : ''));
-        li.dataset.flavor = f.id;
-        li.innerHTML =
-          '<span class="po-flavor__thumb">' +
-          (f.img ? '<img src="' + escapeHtml(f.img) + '" alt="" loading="lazy" onerror="this.remove()">' : '') +
-          (f.soldOut ? '<span class="po-flavor__soldout">' + escapeHtml(CFG.texts.soldOutBadge) + '</span>' : '') +
-          '</span>' +
-          '<span class="po-flavor__info">' +
-          (f.badge ? '<em class="po-flavor__badge">' + escapeHtml(f.badge) + '</em>' : '') +
-          '  <strong class="po-flavor__name">' + escapeHtml(f.name) + '</strong>' +
-          '  <span class="po-flavor__meta">' + escapeHtml(f.meta || '') + '</span>' +
-          '</span>' +
-          '<span class="po-stepper">' +
-          '  <button type="button" class="po-stepper__btn po-stepper__btn--minus" aria-label="빼기"' + (f.soldOut ? ' disabled' : '') + '>&minus;</button>' +
-          '  <span class="po-stepper__value" aria-live="polite">0</span>' +
-          '  <button type="button" class="po-stepper__btn po-stepper__btn--plus" aria-label="더하기"' + (f.soldOut ? ' disabled' : '') + '>+</button>' +
-          '</span>';
-        if (!f.soldOut) {
-          li.querySelector('.po-stepper__btn--minus').addEventListener('click', function () { step(f.id, -1, countCfg); });
-          li.querySelector('.po-stepper__btn--plus').addEventListener('click', function () { step(f.id, +1, countCfg); });
-        }
-        list.appendChild(li);
+      CFG.flavors.forEach(function (f) { list.appendChild(renderFlavor(f)); });
+      /* 이벤트 위임: 맛마다 리스너 2개를 붙이지 않고 목록에 한 번만 (config 규칙) */
+      list.addEventListener('click', function (e) {
+        var btn = e.target.closest ? e.target.closest('.po-stepper__btn') : null;
+        if (!btn || btn.disabled) return;
+        var li = btn.closest('.po-flavor');
+        if (!li || li.classList.contains('is-soldout')) return;
+        step(li.dataset.flavor, parseInt(btn.dataset.step, 10) || 0, countCfg);
       });
-      panelWrap.appendChild(list);
+      return list;
+    }
 
+    function renderPanelFoot(countCfg) {
       var foot = el('div', 'po-panel__foot');
       foot.innerHTML =
         '<div class="po-panel__tooltip" hidden></div>' +
@@ -217,9 +248,7 @@
       foot.querySelector('.po-panel__complete').addEventListener('click', function () {
         onComplete(countCfg);
       });
-      panelWrap.appendChild(foot);
-
-      updatePanel(countCfg);
+      return foot;
     }
 
     function selectedTotal(countCfg) {
@@ -338,30 +367,18 @@
       return parts.join(' + ');
     }
 
+    /* 담기 = 검증 → 옵션값 선택(카페24 위임) → 행 생성 확인(폴링) → 마무리.
+     * 세 단계를 pickEntry / applyAndWait / finishAdd 로 나눕니다. */
     function onComplete(countCfg) {
       if (state.busy) return;
-      var total = selectedTotal(countCfg);
-      if (total !== countCfg.count) { showTooltip(countCfg); return; }
+      if (selectedTotal(countCfg) !== countCfg.count) { showTooltip(countCfg); return; }
       /* 담기 직전 재탐지 — 카페24가 옵션 UI 를 다시 그렸을 수 있고,
        * 다른 경로로 행이 추가/삭제됐을 수도 있습니다. */
       bridge.refresh();
       rescan();
 
-      if (!Object.keys(bridge.optionValues()).length) {
-        toast('옵션 연동을 찾지 못했습니다. 관리자 옵션값 등록을 확인해 주세요.', 'warn');
-        console.warn(TAG + ' 담기 실패: 카페24 옵션 컨트롤 미탐지. ' +
-          'PickOption.diagnose() 로 상세 상태를 확인하세요. ' +
-          '(옵션값 "' + countCfg.label + '_1" 등록 여부 / 기본 옵션 영역 존재 여부)');
-        return;
-      }
-
-      var entry = nextAvailableEntry(countCfg);
-      if (entry == null) {
-        markMaxed();
-        toast(fmt(CFG.texts.toastMaxed, { label: countCfg.label, max: countCfg.maxAdd }), 'warn');
-        return;
-      }
-      var value = entry.value;
+      var entry = pickEntry(countCfg);
+      if (!entry) return;   /* 안내 토스트는 pickEntry 내부에서 처리 */
 
       state.busy = true;
       var completeBtn = panelWrap.querySelector('.po-panel__complete');
@@ -385,9 +402,33 @@
         return;
       }
 
-      /* 행 추가 확인 (최대 1.5초 폴링) 후 마무리.
-       * 개수 증가가 아니라 "해당 옵션값이 담긴 행"을 직접 찾습니다 —
-       * 목록이 위로 쌓이는 스킨/합계행이 있는 스킨에서도 정확합니다. */
+      applyAndWait(entry.value, beforeRows, function (newRow) {
+        finishAdd(newRow, entry.value, countCfg, summary);
+      });
+    }
+
+    /* 담을 옵션값 1개 결정. 연동 미탐지/소진이면 안내 토스트 후 null 반환. */
+    function pickEntry(countCfg) {
+      if (!Object.keys(bridge.optionValues()).length) {
+        toast('옵션 연동을 찾지 못했습니다. 관리자 옵션값 등록을 확인해 주세요.', 'warn');
+        console.warn(TAG + ' 담기 실패: 카페24 옵션 컨트롤 미탐지. ' +
+          'PickOption.diagnose() 로 상세 상태를 확인하세요. ' +
+          '(옵션값 "' + countCfg.label + '_1" 등록 여부 / 기본 옵션 영역 존재 여부)');
+        return null;
+      }
+      var entry = nextAvailableEntry(countCfg);
+      if (entry == null) {
+        markMaxed();
+        toast(fmt(CFG.texts.toastMaxed, { label: countCfg.label, max: countCfg.maxAdd }), 'warn');
+        return null;
+      }
+      return entry;
+    }
+
+    /* 행 추가 확인 (최대 1.5초 폴링) 후 done(newRow|null) 호출.
+     * 개수 증가가 아니라 "해당 옵션값이 담긴 행"을 직접 찾습니다 —
+     * 목록이 위로 쌓이는 스킨/합계행이 있는 스킨에서도 정확합니다. */
+    function applyAndWait(value, beforeRows, done) {
       var tries = 0;
       var timer = setInterval(function () {
         tries++;
@@ -397,21 +438,26 @@
           (rows.length > beforeRows ? rows[rows.length - 1] : null);
         if (newRow || tries > 15) {
           clearInterval(timer);
-          if (newRow) {
-            bridge.tagRow(newRow, value, countCfg.label, countCfg.key, summary);
-            bridge.writeExtra(newRow, summary);
-            toast(CFG.texts.toastAdded, 'ok');
-          } else {
-            console.warn(TAG + ' 선택상품 행 추가를 감지하지 못했습니다. ' +
-              'PickOption.diagnose() 로 목록 컨테이너 탐지 상태와 옵션값(' + value + ') 등록 여부를 확인하세요.');
-            toast('상품을 담지 못했습니다. 옵션 설정을 확인해 주세요.', 'warn');
-          }
-          rescan();
-          state.busy = false;
-          closePanel();
-          resetCards();
+          done(newRow || null);
         }
       }, 100);
+    }
+
+    /* 담기 마무리 — 행 표시 정리·추가입력 기록·토스트·상태 복귀 */
+    function finishAdd(newRow, value, countCfg, summary) {
+      if (newRow) {
+        bridge.tagRow(newRow, value, countCfg.label, countCfg.key, summary);
+        bridge.writeExtra(newRow, summary);
+        toast(CFG.texts.toastAdded, 'ok');
+      } else {
+        console.warn(TAG + ' 선택상품 행 추가를 감지하지 못했습니다. ' +
+          'PickOption.diagnose() 로 목록 컨테이너 탐지 상태와 옵션값(' + value + ') 등록 여부를 확인하세요.');
+        toast('상품을 담지 못했습니다. 옵션 설정을 확인해 주세요.', 'warn');
+      }
+      rescan();
+      state.busy = false;
+      closePanel();
+      resetCards();
     }
 
     function resetCards() {
@@ -508,7 +554,7 @@
         return getState();
       },
       open: function (key) {
-        var c = CFG.counts.filter(function (x) { return x.key === key; })[0];
+        var c = cardByKey(key);
         if (c) onCardClick(c);
       },
       reset: function () { resetCards(); closePanel(); },
