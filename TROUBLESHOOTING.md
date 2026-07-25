@@ -23,19 +23,37 @@
   CSS 는 카페24 `optimizer.php` 로 번들되어 `document.styleSheets` 목록엔 파일명이 안 보이는 게 정상.
 - **경로 규칙 정상.** CSS·JS 모두 `/css|js/module/product/` 스토어프론트 경로.
 - **좌측 상품 이미지 없음(초기 증상)** → 대표이미지 등록 후 **정상 노출**. 해결됨.
+- **담기(선택완료 → 선택상품 행 생성) 정상 동작 확인됨.** 시크릿 창 스토어프론트 직접 접속 기준.
+  이전에 담기가 막혔던 건 관리자 경유 미리보기 세션의 poxo 오버레이 탓(#A). 코드 정상.
+- **검증 환경 규칙: 반드시 시크릿 창 · 로그아웃 · 스토어프론트 URL 직접 접속.**
+  관리자에서 상품을 클릭해 열면 분석앱 오버레이(`#atl-ghost`)가 상세를 오염시킨다(#A).
 
 ---
 
 ## 이슈 트래킹
 
-### #A. 화면을 덮는 dim / 클릭 불가 — ✅ 원인 규명(내 코드 아님)
+### #A. 화면을 덮는 dim / 클릭 불가 (담기 안 됨) — ✅ 원인 확정·해결(내 코드 아님, 환경 문제)
 
-- 증상: 상세 좌측에 빗금 무늬가 덮이고 클릭이 막힘.
-- 진단: `document.elementFromPoint(중앙)` = `DIV.disable` (pos=absolute, pe=auto, 흰 배경).
-  내 오버레이는 전부 정상(`.po-overlay`·`.pd-sheet-dim`·`.po-panel` 모두 `hidden`/`display:none`).
-- 원인: **카페24 기본 스킨의 `.disable` 레이어.** 우리 딤/오버레이가 아님.
-- 상태: 상품이 정상 판매 상태가 되면 사라지는 성격. 상품 설정 정상 확인됐으므로
-  재현되면 `.disable` 의 소속 모듈을 다시 특정한다(중앙 클릭 요소 재확인).
+- 증상: 상세 좌측에 빗금 무늬가 덮이고 카드·옵션 클릭이 막혀 담기가 안 됨.
+- **최종 원인(확정): 상세페이지를 관리자 "상품관리"에서 바로 열어 생긴 미리보기 세션.**
+  - CFA 스크립트 URL 의 `uref=.../disp/admin/shop1/product/ProductManage...` = **관리자 경유 접속**.
+  - poxo 분석/히트맵 앱(`assets.poxo.com/jet/jet.js`, `optimizer.poxo.com/ca2/analytics.js`)이
+    상세 폼 전체를 **`#atl-ghost` 로 복제**(→ `.xans-product-detail` 2개, `#pickOptionRoot`·옵션
+    select·구매버튼·`{$total.total_id}` ID 가 2벌) + `z-index:501` 오버레이로 상품 영역을 덮음.
+  - 이때 관측된 `DIV.disable`(1344×1270, 빗금)·`detailCount:2` 는 전부 이 미리보기 세션의 부산물.
+- **해결: 시크릿 창 · 로그아웃 · 스토어프론트 URL 직접 접속**(QA_CHECKLIST 정식 조건).
+  `https://egnisgo.cafe24.com/product/detail.html?product_no=11` 직접 입력 시:
+  `detailCount:1`, `#atl-ghost` 없음, 중앙 클릭요소 정상(`SECTION.pd__left`), **담기 정상 동작 확인**.
+- 코드 수정 불필요. detail.html·pick_option.js 정상. `.pd-cafe24-option` 의 `clip` 숨김도 무관.
+- 판정 콘솔:
+  ```js
+  ({ detailCount: document.querySelectorAll('.xans-product-detail').length,
+     ghost: !!document.getElementById('atl-ghost'),
+     fromAdmin: /disp\/admin/.test(document.referrer) })
+  // 관리자 경유면 detailCount:2 + ghost:true + fromAdmin:true → 시크릿 창으로 재접속
+  ```
+- ⚠️ 교훈: 몰 기능 검증은 **반드시 시크릿 창 스토어프론트 직접 접속**으로 한다.
+  관리자 미리보기/앱 오버레이가 상세 DOM 을 오염시켜 "우리 코드 버그"로 오인하게 만든다.
 
 ### #B. diagnose "CSS 로드 ❌" (오탐) + 선택완료 버튼 배경 사라짐 — ✅ 수정 완료
 
