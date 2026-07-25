@@ -556,10 +556,11 @@
       add('스크립트 로드 (util·bridge)', !!(NS.utils && NS.bridge),
         'option_config → pick_util → cafe24_bridge → pick_option → page 순서/누락 확인');
 
-      /* CSS 로드: 우리가 렌더한 .po__head 배경색이 스타일 미적용 기본값이면 CSS 누락 */
-      var headEl = section.querySelector('.po__head');
-      var bg = headEl ? (window.getComputedStyle(headEl).backgroundColor || '') : '';
-      var cssLoaded = !!bg && bg !== 'transparent' && bg !== 'rgba(0, 0, 0, 0)';
+      /* CSS 로드: .po-card__btn 는 pick_option.css 에서 display:flex 다.
+       * 네이티브 버튼 기본값(inline-block)이면 CSS 미적용.
+       * (배경색은 리셋 명시도에 눌릴 수 있어 레이아웃 속성으로 판정한다) */
+      var probe = section.querySelector('.po-card__btn');
+      var cssLoaded = !!probe && window.getComputedStyle(probe).display === 'flex';
       add('CSS 로드 (pick_option.css)', cssLoaded,
         '@css(/css/module/product/pick_option.css) 지시자 / 경로 확인');
 
