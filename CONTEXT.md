@@ -25,29 +25,26 @@
   - **#E-2 행 가격에 기본 판매가(24,700) 중복 가산 = 관리자 데이터 문제(코드 아님) → 관리자에서 해결됨.**
     상품 판매가 24,700 유지 + 각 옵션 추가금액을 "목표가−24,700"(10=0/30=45,800/50=86,800/
     100=171,300)로 수정. **검증됨(30개입 = 70,500원 정상).**
-  - **#F 선택옵션 행 표시 정리 → 텍스트 2건 완료, 스테퍼 1건 미해결.**
+  - **#F 선택옵션 행 표시 정리 → ✅ 3건 전부 완료·몰 검증됨.**
     - ✅ tagRow(cafe24_bridge.js): 상품명-옵션 사이 `-` 구분자·카페24 추가금액 표시
       `(+n원)` 제거. **몰에서 정상 적용 확인됨.**
-    - ⛔ **수량 스테퍼 `[− 1 +]`(custom_detail.css): 몰 적용 시 문제 있음 — 다음 세션 처리.**
-      (아래 "다음 세션 즉시 할 일" · [열린 이슈](#7-열린-이슈) #4)
+    - ✅ **수량 스테퍼 `[− 1 +]` 해결됨.** 근본원인 = **스킨이 화살표를 `position:absolute`
+      로 세로 스택**(절대배치라 flex `order` 무시). 해결 = ①`cafe24_bridge.js tagQuantity()`
+      로 `.po-qty*` 클래스 직접 태깅 ②JS 로드를 `@js` 지시자로 바꿔 CDN 캐시 무효화(#G)
+      ③`css/custom_detail.css .po-qty__btn{position:static!important}` 로 절대배치 상쇄.
+      **몰에서 `[− 1 +]` 정상 표시 검증 완료.** 상세: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) #F/#G.
 - **검증은 반드시 시크릿 창 · 로그아웃 · 스토어프론트 URL 직접 접속.**
   관리자에서 상품 클릭해 열면 poxo 오버레이(`#atl-ghost`)가 상세 DOM 을 오염시킴(#A).
 
 ### ▶▶ 다음 세션 즉시 할 일 (순서대로)
-1. **수량 스테퍼(`[− 1 +]`) 몰 적용 문제 해결** — [열린 이슈](#7-열린-이슈) #4.
-   - 먼저 몰에서 선택상품 행의 `.quantity` 실제 DOM·computed style 캡처(스킨 `detail.css`
-     가 `.quantity a`/`img` 를 더 높은 명시도로 덮는지, 추가 행의 up/down 클래스가
-     `up`/`down` 이 맞는지). custom_detail.css 최신본 업로드/캐시 여부도 확인.
-   - 현재 CSS: `css/custom_detail.css` `.pd-selected #totalProducts .quantity`
-     (`img{display:none}` + `a.down/up::before` 로 `−`/`+`). 어디서 깨지는지부터 특정.
-2. 스테퍼 해결 후 §6 나머지 시나리오(30개입 2회 담기 → `is-maxed`/삭제 해제, 모바일 2단
-   시트, 시트 닫은 뒤 본문 클릭) 육안 검증.
-3. 마지막 Phase 4 문서 정리(README/QA_CHECKLIST 최신화).
+1. §6 나머지 시나리오 육안 검증(30개입 2회 담기 → `is-maxed`/삭제 해제, 모바일 2단
+   시트, 시트 닫은 뒤 본문 클릭).
+2. 마지막 Phase 4 문서 정리(README/QA_CHECKLIST 최신화).
 
-### 재업로드 필요 파일 (몰 반영 대상)
-- 이번 세션 커밋(`ffcc412`) 수정분: `js/page.js`, `js/cafe24_bridge.js`,
-  `css/custom_detail.css`. → 몰의 `/js|css/module/product/` 에 최신본 업로드 확인.
-  (스테퍼 CSS 는 몰에서 아직 안 먹음 = 위 #1.)
+### 재업로드 필요 파일 (몰 반영 대상 — 이번 세션 스테퍼 수정분)
+- `js/cafe24_bridge.js`(tagQuantity), `css/custom_detail.css`(스테퍼 position 수정),
+  `html/detail.html`·`snippet_detail_pc.html`·`snippet_detail_mobile.html`(JS 로드 `@js` 전환).
+  → 몰의 `/js|css/module/product/` 및 스킨 템플릿에 반영 완료 확인.
 
 ---
 
@@ -167,7 +164,7 @@ JS `/js/module/product/*.js`, 이미지만 파일업로더 `/web/upload/pick_opt
 | 1 | `main contents 클릭이 안되는 에러` (직전 커밋 499318b) — 닫힌 오버레이가 본문 클릭을 먹음 | Phase 3 재작성으로 딤(`.pd-sheet-dim`)을 기본 `display:none` + `.is-open` 표시로 정리(PC 에서 `@media min-width:768`로 항상 숨김). `diagnose()` 의 `elementFromPoint` 점검으로 회귀 감시. **몰에서 최종 확인 필요** |
 | 2 | 시안 상단부(프로모션바·헤더·GNB)는 `layout.html` 소관이라 이번 범위 밖 | 별도 작업으로 분리 |
 | 3 | 시안에는 있으나 카페24 치환변수가 없는 문구(개당 단가, 쿠폰 배너, 오늘 N명) | 정적 마크업 + "관리자에서 교체" 주석으로 처리 |
-| 4 | **선택상품 수량 스테퍼 `[− 1 +]` 몰 적용 시 문제(미해결)** | `css/custom_detail.css` 에 `.pd-selected #totalProducts .quantity`(카페24 화살표 `img{display:none}` + `a.down/up::before` 로 `−`/`+`) 적용했으나 **몰에서 정상 표시 안 됨**. 텍스트 정리(#F)·총액(#E-1)은 완료·검증됨. **다음 세션에서 처리** — 몰의 `.quantity` 실제 DOM/computed style 캡처로 원인 특정(스킨 `detail.css` 명시도 덮어쓰기 / 추가 행 up·down 클래스 / CSS 최신본 업로드·캐시). 커밋 `ffcc412` 에 현재 CSS 포함됨 |
+| 4 | ~~선택상품 수량 스테퍼 `[− 1 +]` 몰 적용 문제~~ **✅ 해결·검증 완료** | 근본원인 = 스킨이 화살표 `.up`/`.down` 을 `position:absolute`(`left:28px;top:0/12px`)로 세로 스택 → 절대배치라 flex `order` 무시. 해결 3단계: ①`cafe24_bridge.js tagQuantity()` 로 `.po-qty*` 클래스 직접 태깅 ②JS 로드를 `@js` 지시자로 전환해 CDN 캐시 무효화(#G) ③`.po-qty__btn{position:static!important}` 로 절대배치 상쇄. 몰에서 `[− 1 +]` 정상 표시 검증됨. 상세: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) #F/#G |
 
 ## 8. 사용자 요청 변경 이력
 
@@ -177,5 +174,9 @@ JS `/js/module/product/*.js`, 이미지만 파일업로더 `/web/upload/pick_opt
 - **금액 계산 오류 + 선택옵션 표시 정리** (2026-07-25, 커밋 `ffcc412`) — 추가 상품 담기 시
   ① 총액 "0원"(page.js 코드 버그) → 수정·검증 완료, ② 행 가격에 기본 판매가 중복 가산
   (관리자 옵션 추가금액 데이터) → 관리자에서 해결·검증 완료, ③ 행 표시의 `-`·`(+n원)`
-  텍스트 제거(cafe24_bridge.js tagRow) → 완료, ④ 수량 스테퍼 `[− 1 +]` 재디자인
-  (custom_detail.css) → 몰 적용 문제로 **미해결(다음 세션)**. 상세: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) #E/#F.
+  텍스트 제거(cafe24_bridge.js tagRow) → 완료. 상세: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) #E/#F.
+- **수량 스테퍼 `[− 1 +]` 완성** (2026-07-25) — 선택상품 행 수량 컨트롤을 맛 선택
+  스테퍼와 동일한 `[− 1 +]` 가로 배치로. 근본원인은 **스킨의 화살표 절대배치**(`position:
+  absolute` → flex `order` 무시)였고, 해결 과정에서 **JS CDN 캐시 문제(#G)** 도 함께
+  드러나 JS 로드를 `@js` 지시자로 전환. 최종: `tagQuantity()` 클래스 태깅 + `@js` 로드 +
+  `.po-qty__btn{position:static!important}`. **몰 검증 완료.** 상세: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) #F/#G.

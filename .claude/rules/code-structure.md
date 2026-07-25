@@ -59,7 +59,7 @@ UI 가 깨졌습니다.
 | 종류 | 경로 | 로드 방식 |
 | --- | --- | --- |
 | CSS | `/css/module/product/*.css` | `<!--@css(...)-->` 지시자 |
-| JS | `/js/module/product/*.js` | `<script src="...">` |
+| JS | `/js/module/product/*.js` | `<!--@js(...)-->` 지시자 |
 | 이미지 | `/web/upload/pick_option/...` | 파일업로더 (**이미지만** 예외) |
 
 - 이 두 경로 외의 폴더를 임의로 만들지 않습니다.
@@ -67,11 +67,15 @@ UI 가 깨졌습니다.
 - `/css/module/product/detail.css` 는 **스킨 원본 파일**입니다. 우리 스타일은
   `custom_detail.css` 로 이름을 구분해 덮어쓰지 않습니다.
   원본을 덮어쓰면 카페24 기본 모듈의 스타일이 사라져 상세페이지가 깨집니다.
-- CSS 는 `<link>` 대신 `@css` 지시자를 씁니다. 카페24가 스킨 버전에 맞는 캐시
-  파라미터를 붙여 주므로 수정 후 반영이 확실합니다.
+- CSS 는 `<link>`, JS 는 plain `<script src>` 대신 **`@css` / `@js` 지시자**를 씁니다.
+  카페24가 스킨 버전에 맞는 캐시 파라미터를 자동으로 붙여 주므로 수정 후 반영이 확실합니다.
+  plain `<script src>` 는 파라미터가 없어 카페24 CDN 이 옛 파일을 계속 서빙합니다
+  (실제로 이 때문에 JS 수정이 반영 안 된 적 있음 — TROUBLESHOOTING #G). 수동 `?v=`
+  버전 파라미터는 매번 갱신해야 해 실수하기 쉬우므로 쓰지 않고 `@js` 로 자동화합니다.
 - 스킨 템플릿(`html/*.html`)에서 `/web/upload/` 로 시작하는 `<link>` · `<script>` 를
   **새로 추가하지 않고, 발견하면 스토어프론트 경로로 되돌립니다.**
-- JS 로드 순서는 항상 `option_config.js → pick_option.js → page.js` 입니다.
-  스니펫을 포함해 3개를 모두 로드합니다(`page.js` 누락 주의).
+- JS 로드 순서는 항상 `option_config.js → pick_util.js → cafe24_bridge.js →
+  pick_option.js → page.js` 입니다. 스니펫을 포함해 5개를 모두 로드합니다
+  (`page.js` 누락 주의). `@js` 는 위치 그대로 `<script>` 로 치환돼 순서가 보존됩니다.
 - 설명 주석 안에 `<!--@css(...)-->` 같은 지시자 예시를 **문자 그대로 넣지 않습니다.**
   HTML 주석은 중첩되지 않아 주석이 끊기고, 카페24가 실제 지시자로 처리할 수 있습니다.

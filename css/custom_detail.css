@@ -204,32 +204,44 @@
 .pd-selected #totalProducts tbody > tr:has(p.product) td:nth-child(2) { grid-area: qty; align-self: center; justify-self: start; }
 .pd-selected #totalProducts tbody > tr:has(p.product) td.right { grid-area: price; align-self: center; justify-self: end; text-align: right; }
 
-/* 수량 스테퍼 — 카페24 .quantity(input + up/down 링크)를 [− 1 +] 로 디자인.
- * DOM 은 그대로 두고(카페24 수량 로직 유지) 화살표 이미지만 −/+ 기호로 대체합니다. */
-.pd-selected #totalProducts .quantity {
-  display: inline-flex; align-items: center;
-  border: 1px solid var(--pg-line); border-radius: 8px; overflow: hidden; background: #fff;
+/* 수량 스테퍼 — 카페24 native .quantity(input + up/down 링크)를 맛 선택 스테퍼
+ * (.po-stepper)와 동일한 [− 1 +] 가로 배치로 보이게 한다.
+ *   · DOM·이벤트는 그대로 → 카페24 수량 증감 로직 유지.
+ *   · cafe24_bridge.js tagQuantity() 가 행 생성 시 .po-qty / .po-qty__* 클래스를
+ *     직접 찍는다. 스킨 detail.css 가 .quantity 자식을 float/block 으로 세로
+ *     스택시키므로, 조상 셀렉터 대신 우리 클래스 + !important 로 확실히 상쇄한다. */
+/* 셀렉터를 #totalProducts + 태그 클래스로 올려 스킨 detail.css(예:
+ * `#totalProducts .quantity a`)의 명시도(1,1,1)를 확실히 이긴다. 단일 클래스
+ * + !important 로는 스킨의 ID 스코프 규칙을 못 이겨 세로 스택이 남았다. */
+#totalProducts .quantity.po-qty {
+  display: inline-flex !important; flex-direction: row !important;
+  align-items: center; width: auto !important; height: auto !important;
+  border: 1px solid var(--pg-line); border-radius: 8px; overflow: hidden;
+  background: #fff; padding: 0 !important;
 }
-.pd-selected #totalProducts .quantity input {
-  width: 40px; height: 34px; border: 0; text-align: center; font-weight: 700; font-size: 14px;
-  background: #fff; -moz-appearance: textfield; padding: 0;
+#totalProducts .po-qty input.po-qty__input {
+  order: 0 !important; float: none !important;
+  width: 40px !important; height: 34px !important; margin: 0 !important; padding: 0 !important;
+  border: 0 !important; text-align: center; font-weight: 700; font-size: 14px; color: var(--pg-ink);
+  background: #fff; -moz-appearance: textfield;
 }
-.pd-selected #totalProducts .quantity input::-webkit-outer-spin-button,
-.pd-selected #totalProducts .quantity input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-/* 카페24 기본 화살표 이미지 숨김 → 기호로 대체 */
-.pd-selected #totalProducts .quantity img { display: none; }
-.pd-selected #totalProducts .quantity a {
-  position: relative; width: 34px; height: 34px;
-  display: inline-flex; align-items: center; justify-content: center;
+#totalProducts .po-qty input.po-qty__input::-webkit-outer-spin-button,
+#totalProducts .po-qty input.po-qty__input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+#totalProducts .po-qty a.po-qty__btn {
+  /* 스킨이 .up/.down 을 position:absolute + left/top 으로 세로 스택시키므로
+   * static !important 로 되돌려 flex 흐름(order)에 복귀시킨다. */
+  position: static !important; float: none !important; margin: 0 !important;
+  width: 34px !important; height: 34px !important;
+  display: inline-flex !important; align-items: center; justify-content: center;
   font-size: 0; text-decoration: none; color: var(--pg-ink); cursor: pointer;
 }
-.pd-selected #totalProducts .quantity a.down { order: -1; border-right: 1px solid var(--pg-line); }
-.pd-selected #totalProducts .quantity a.up { order: 1; border-left: 1px solid var(--pg-line); }
-.pd-selected #totalProducts .quantity a::before {
-  font-size: 16px; font-weight: 500; line-height: 1;
-}
-.pd-selected #totalProducts .quantity a.down::before { content: "\2212"; } /* − */
-.pd-selected #totalProducts .quantity a.up::before { content: "+"; }
+/* 카페24 기본 화살표 이미지 숨김 → 기호로 대체 */
+#totalProducts .po-qty a.po-qty__btn img { display: none !important; }
+#totalProducts .po-qty a.po-qty__btn::before { font-size: 16px; font-weight: 500; line-height: 1; }
+#totalProducts .po-qty a.po-qty__btn--down { order: -1 !important; border-right: 1px solid var(--pg-line); }
+#totalProducts .po-qty a.po-qty__btn--down::before { content: "\2212"; } /* − */
+#totalProducts .po-qty a.po-qty__btn--up { order: 1 !important; border-left: 1px solid var(--pg-line); }
+#totalProducts .po-qty a.po-qty__btn--up::before { content: "+"; }
 
 /* 가격 */
 .pd-selected #totalProducts td.right > span:first-child { font-size: 16px; font-weight: 800; }

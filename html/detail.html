@@ -406,9 +406,12 @@
         product_additional 의 #prdDetail 안 상세설명 변수 출력은 제거해 중복을 막으세요.
      ※ HTML 주석은 중첩되지 않으므로 이 안내문에 예시 마크업을 넣지 마세요. -->
 
-<!-- 로드 순서 고정: option_config → pick_util → cafe24_bridge → pick_option → page -->
-<script src="/js/module/product/option_config.js"></script>
-<script src="/js/module/product/pick_util.js"></script>
-<script src="/js/module/product/cafe24_bridge.js"></script>
-<script src="/js/module/product/pick_option.js"></script>
-<script src="/js/module/product/page.js"></script>
+<!-- 로드 순서 고정: option_config → pick_util → cafe24_bridge → pick_option → page
+     @js 지시자로 로드한다(@css 와 동일). 카페24가 스킨 버전 캐시 파라미터를 자동으로
+     붙여 주므로, JS 를 수정·재업로드하면 CDN 캐시가 알아서 무효화된다(수동 버전 갱신 불필요).
+     서버가 위치 그대로 <script> 로 치환하므로 비동기가 아니어서 로드 순서도 보존된다. -->
+<!--@js(/js/module/product/option_config.js)-->
+<!--@js(/js/module/product/pick_util.js)-->
+<!--@js(/js/module/product/cafe24_bridge.js)-->
+<!--@js(/js/module/product/pick_option.js)-->
+<!--@js(/js/module/product/page.js)-->

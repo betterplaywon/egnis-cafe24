@@ -227,11 +227,47 @@
   - `js/cafe24_bridge.js` `tagRow`: 행 텍스트 노드를 정리 — 옵션값 suffix 제거에
     더해 `(+금액원)` 표시 제거 + `-` 구분자(빈/대시 전용 텍스트 노드) 제거.
     표시 텍스트만 바꾸며 결제는 행 hidden input(`item_code[]`)이 담당(안전).
-  - `css/custom_detail.css` `.pd-selected #totalProducts .quantity`: 카페24 화살표
-    `<img>` 를 숨기고 `a.down`/`a.up` 에 `−`/`+` 기호를 넣어 `[− 1 +]` 로 디자인.
-    DOM·수량 로직은 그대로라 카페24 수량 증감이 정상 동작.
-- 재검증: 재업로드 후 **새 담기**로 확인(기존 세션 행은 tagRow 가 이미 지나가 갱신 안 됨).
-  카드에 `-`·`(+금액)` 이 없고 `[− 1 +]` 스테퍼로 표시되면 완료.
+  - 수량 스테퍼: 카페24 native `.quantity`(input + up/down 링크)를 **맛 선택
+    스테퍼(`.po-stepper`)와 동일한 `[− 1 +]` 가로 배치**로 보이게 한다. DOM·이벤트는
+    그대로라 카페24 수량 증감 로직은 유지. **✅ 최종 해결·몰 검증됨.**
+    - **진짜 근본원인(확정)**: 스킨(`before_detail.css` 대조)이 화살표를 절대배치로
+      세로 스택시킨다 — `#totalProducts tbody td .quantity .up{position:absolute;left:28px;top:0}`,
+      `.down{...top:12px}`. **절대배치 요소는 flex `order` 를 무시**하므로 가로 배치가 안 먹었다.
+    - **해결에 이른 3단계(각 단계가 다음 원인을 드러냄)**:
+      1. CSS 조상 셀렉터(`.pd-selected #totalProducts .quantity`)+`!important` → 매칭 불안정.
+         → `js/cafe24_bridge.js` `tagQuantity()` 가 행 생성 시 `.quantity` 에 우리 클래스
+         `.po-qty`/`.po-qty__input`/`.po-qty__btn--up|--down` 을 **직접 부여**(텍스트 정리
+         `tagRow` 와 같은 경로라 신뢰). CSS 는 그 클래스만 스타일.
+      2. 그래도 안 됨 → 콘솔로 확인하니 몰이 **옛 JS 서빙**(#G). `<script src>` 를 `@js`
+         지시자로 전환해 CDN 캐시 자동 무효화. 이후 최신 JS 로드 확인.
+      3. 최신 JS·CSS 로드됐는데도 세로 스택 → 정리(cleanup) 중 `before_detail.css` 에서
+         스킨의 `position:absolute` 발견. 내 `.po-qty__btn` 이 `position:relative` 를
+         **`!important` 없이** 줘서 스킨(명시도 1,2,2)에 짐.
+    - **최종 수정**: `css/custom_detail.css` `.po-qty__btn` 을 `position: static !important`
+      로 바꿔 절대배치(+`left`/`top`)를 무력화 → 버튼이 flex 흐름에 복귀해 `order` 로
+      `[− 1 +]` 정렬. **몰에서 `[− 1 +]` 정상 표시 검증 완료.**
+- 재검증(완료): 재업로드 후 **새 담기** 기준으로 카드에 `-`·`(+금액)` 이 없고
+  `[− 1 +]` 스테퍼로 표시됨. 콘솔 `getComputedStyle(.po-qty a).position === 'static'`,
+  `order` 가 `-1`(down)/`1`(up) 확인.
+
+### #G. JS 수정이 몰에 반영 안 됨 — CDN 이 plain `<script src>` URL 캐싱 — ✅ 원인 확정·조치
+
+- 증상: `js/cafe24_bridge.js` 를 최신으로 업로드했는데도 새 코드(`tagQuantity` 의
+  `.po-qty` 태깅)가 몰에서 동작 안 함. 스테퍼가 계속 카페24 기본 세로 화살표로 표시.
+- **원인 확정(콘솔 판정)**: 스토어프론트 경로를 직접 fetch 해보니
+  - `fetch('/js/module/product/cafe24_bridge.js', {cache:'no-store'})` → `tagQuantity: false` (옛 파일)
+  - `fetch(같은URL + '?v=' + Date.now(), {cache:'no-store'})` → `tagQuantity: true` (새 파일)
+  - → **오리진 파일은 최신인데, 쿼리 없는 URL 을 카페24 CDN 이 캐싱**해 옛 파일을 서빙.
+    `no-store` 도 CDN 자체 TTL 앞에서는 무력(클라이언트 헤더 무시). 쿼리를 붙이면 새 캐시 키라 오리진 적중.
+- 왜 CSS 는 괜찮았나: CSS 는 `@css` 지시자라 카페24가 스킨 버전 캐시 파라미터를 자동으로
+  붙여 매번 새 URL. JS 는 plain `<script src>` 라 파라미터가 없어 CDN 캐시가 안 풀림.
+- 조치: `html/detail.html`·`snippet_detail_pc.html`·`snippet_detail_mobile.html` 의 JS 5개를
+  plain `<script src>` → **`@js` 지시자**로 전환(`@css` 와 동일). 카페24가 스킨 버전 캐시
+  파라미터를 자동 부여하므로 **수동 버전 갱신 없이** JS 재업로드 시 캐시가 자동 무효화된다.
+  `@js` 는 위치 그대로 `<script>` 로 치환돼 로드 순서도 보존. 템플릿은 서버 렌더라 저장 즉시 반영.
+  (수동 `?v=` 방식도 검토했으나 매번 값 갱신이 필요해 실수 소지 → `@js` 로 자동화.)
+- ⚠️ 교훈: "몰에 최신 업로드했다" 는 **서버가 그 URL 로 실제 서빙하는 내용**으로 검증한다.
+  `fetch(url, {no-store})` vs `fetch(url+'?v='+Date.now())` 비교로 오리진/CDN 캐시를 가른다.
 
 ---
 
@@ -276,5 +312,7 @@ PickOption.diagnose()
 - `css/pick_option.css` (#B)
 - `js/pick_option.js` (#B)
 - `js/page.js` (#E-1 총액 계산 수정)
-- `js/cafe24_bridge.js` (#F 행 텍스트 정리: `-`·추가금액 표시 제거)
-- `css/custom_detail.css` (#F 수량 스테퍼 `[− 1 +]` 디자인)
+- `js/cafe24_bridge.js` (#F 행 텍스트 정리 + `tagQuantity` 로 `.po-qty` 태깅)
+- `css/custom_detail.css` (#F 수량 스테퍼 `[− 1 +]`: `.po-qty__btn{position:static!important}` 로 스킨 절대배치 상쇄)
+- `html/detail.html` · `html/snippet_detail_pc.html` · `html/snippet_detail_mobile.html`
+  (#G JS 로드를 `@js` 지시자로 전환 — 캐시 자동 무효화, 수동 버전 갱신 불필요)
