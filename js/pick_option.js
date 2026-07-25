@@ -513,6 +513,10 @@
       },
       reset: function () { resetCards(); closePanel(); },
 
+      /* 선택상품 "행" 목록 — page.js 의 합계 표시가 같은 판별 규칙을 쓰도록 노출.
+       * (행 판별 규칙이 pick_option 과 page.js 에 두 벌 존재하지 않게 함) */
+      rows: function () { return bridge.rows(); },
+
       /* 연동 상태 진단 — 콘솔에서 PickOption.diagnose() 실행 */
       diagnose: function () {
         var insp = bridge.inspect();

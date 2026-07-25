@@ -84,17 +84,25 @@
     var container = U.findFirst(rowsSel);
     var parsePrice = U.parsePrice;
 
+    /* 행 목록은 pick_option(브릿지)의 판별 규칙을 우선 사용해 규칙을 단일화합니다.
+     * pick_option 이 초기화되지 않은 경우에만 컨테이너 직접 조회로 폴백합니다. */
+    function getRows() {
+      var PO = window.PickOption;
+      if (PO && typeof PO.rows === 'function') return PO.rows();
+      if (!container) return [];
+      return [].filter.call(
+        container.querySelectorAll((CFG.cafe24 && CFG.cafe24.rowItem) || 'tr, li'),
+        function (r) { return /개입/.test(r.textContent || ''); }
+      );
+    }
+
     function updateSummary() {
       var setsEl = document.querySelector('[data-pd-total-sets]');
       var priceEl = document.querySelector('[data-pd-total-price]');
       var fill = document.querySelector('.pd-freeship__fill');
       var msg = document.querySelector('.pd-freeship__msg');
-      if (!container) return;
 
-      var rows = [].filter.call(
-        container.querySelectorAll((CFG.cafe24 && CFG.cafe24.rowItem) || 'tr, li'),
-        function (r) { return /개입/.test(r.textContent || ''); }
-      );
+      var rows = getRows();
 
       /* 카페24 합계 요소가 있으면 그 값을 신뢰 */
       var cafeTotal = document.querySelector('[data-cafe24-total]');

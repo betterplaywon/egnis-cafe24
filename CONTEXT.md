@@ -52,8 +52,8 @@ custom_detail.css 를 시안(PC/모바일) 기준으로 새로 작성한다.
 | 1-1 | `js/pick_util.js` — 공용 헬퍼 추출 (`ready`/`findFirst`/`fmt`/`money`/`parsePrice`/`el`/`escapeHtml`/`classOf`) | ✅ 완료 |
 | 1-2 | `js/cafe24_bridge.js` — 옵션값 파서·컨트롤 탐지·조작·행 관측·추가입력·구매버튼 판별 이동 | ✅ 완료 |
 | 1-3 | `js/pick_option.js` 축소 — 상태 + 렌더링만 (890→556줄, 1-2 와 함께 완료) | ✅ 완료 |
-| 1-4 | `js/page.js` — 합계 표시를 `PickOption.rows()` 로, 행 판별 규칙 단일화 | ⏳ 진행 예정 |
-| 1-5 | 구조 정리 — 이벤트 위임 / 50줄 초과 함수 분리 / `freeShipGoal` 설정 이동 | ⏳ |
+| 1-4 | `js/page.js` — 합계 표시를 `PickOption.rows()` 로, 행 판별 규칙 단일화 | ✅ 완료 |
+| 1-5 | 구조 정리 — 이벤트 위임 / 50줄 초과 함수 분리 / `freeShipGoal` 설정 이동 | ⏳ 진행 예정 |
 | 1-6 | `PickOption.diagnose()` 자가진단 강화 | ⏳ |
 | 2 | `html/detail.html` 신규 작성 | ⏳ |
 | 3 | `css/custom_detail.css` 신규 작성 | ⏳ |
