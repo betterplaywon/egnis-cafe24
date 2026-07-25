@@ -89,7 +89,23 @@
   - 둘 다 없음 → 옵션 모듈 블록을 독립선택형 기본 스킨 구조로 정면 교체.
 - 참고: `.pd-cafe24-option` 은 `clip`/1px 로 숨기는데 CSS 는 DOM 에서 요소를 제거하지
   못하므로, "옵션이 DOM 에 아예 없음"은 숨김 탓이 아니다(서버/JS 렌더 자체가 안 된 것).
-  단, snippet 주석의 경고("옵션 숨기면 select 가 사라지는 스킨 있음")도 병행 점검.
+
+- **서버 원본 HTML 판정 결과(확정):**
+  - `"10개입"` 은 옵션 UI 가 아니라 **SEO JSON-LD(`offers`)** 안에만 존재.
+  - 옵션/상품 스크립트 = 우리 5파일 + 카페24 `/ind-script/il_3` 번들뿐.
+    별도 옵션 렌더 스크립트 없음.
+  - 옵션엔진 흔적 = `aOptionColorchip`(컬러칩)만. **옵션을 그리는 `aOptionData` 류가
+    서버 출력에 아예 없음.** `{$option_name}` 도 빈 값.
+  - → **카페24 서버가 이 `module="product_option"` 에 옵션을 바인딩/출력하지 않음.**
+    CSS/JS/숨김 무관한 **서버 렌더 단계 문제**. 원인은 스킨 옵션 모듈 구조(또는 순정 대비 누락).
+  - 부수 관찰: `.xans-product-option` 4개 = product_detail 이 2번 렌더된 정황(추가 확인 필요:
+    `document.querySelectorAll('.xans-product-detail').length`).
+
+- **다음 결정 단계(순정 스킨 대조 — 진행 예정):**
+  - [ ] 카페24 베이직 **순정 detail.html** 에서 이 상품(product_no=11)의 옵션이 렌더되는지 확인.
+        렌더되면 → 우리 스킨이 깨뜨린 것 → 옵션 모듈 블록을 순정 기준으로 정면 교체.
+        안 되면 → 상품/카페24 레벨(독립선택형+텍스트버튼+직접입력 조합) 특성 → 별도 대응.
+  - [ ] 순정 옵션 모듈 블록(`module="product_option"` 테이블)을 확보해 우리 detail.html 과 diff.
 
 ---
 
