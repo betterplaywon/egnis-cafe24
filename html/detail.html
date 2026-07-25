@@ -94,10 +94,12 @@
 
             <div class="pd-content">
                 <!-- ★CAFE24: 상품 상세설명(에디터/이미지) 영역. 탭 바로 아래에 노출됩니다.
-                     상세설명은 product_additional 모듈의 {$product_detail} 로 출력합니다
+                     아래 product_additional 모듈이 상세설명 변수(product_detail)를 출력합니다
                      (좌측 갤러리 product_image 처럼 product_detail 안에 모듈 중첩 가능).
-                     ※ 하단에 원본 product_additional(후기·Q&A·관련상품)을 이어붙일 때는
-                        그쪽 {$product_detail} 를 제거해 상세설명 중복 출력을 막으세요. -->
+                     내용이 안 보이면 관리자 > 상품관리 > 상품수정 > '상세 이미지/설명'에
+                     상세설명(이미지)이 등록돼 있는지 확인하세요(빈 값이면 <p><br></p> 만 출력).
+                     ※ 하단에 원본 product_additional(후기·Q&A·관련상품)을 이어붙이면 그쪽
+                        상세설명 변수 출력을 제거해 중복을 막으세요. -->
                 <div module="product_additional">
                     {$product_detail}
                 </div>
@@ -400,9 +402,8 @@
 
 <!-- 여기부터 원본 detail.html 의 쿠폰 import 지시자와 product_additional 모듈
      (구매안내/후기/Q&A/관련상품)을 이어붙이세요.
-     ※ 상세설명({$product_detail})은 위 .pd-content 에서 이미 출력하므로, 여기에
-        붙이는 원본 product_additional 의 #prdDetail 안 {$product_detail} 는
-        제거해 중복 출력을 막으세요.
+     ※ 상세설명은 위 .pd-content 에서 이미 출력하므로, 여기에 붙이는 원본
+        product_additional 의 #prdDetail 안 상세설명 변수 출력은 제거해 중복을 막으세요.
      ※ HTML 주석은 중첩되지 않으므로 이 안내문에 예시 마크업을 넣지 마세요. -->
 
 <!-- 로드 순서 고정: option_config → pick_util → cafe24_bridge → pick_option → page -->

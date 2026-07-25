@@ -296,14 +296,21 @@
       row.dataset.pickValue = value;
       row.dataset.pickKey = key;
       var textEl = qsFirst([CFG.cafe24.rowOptionText], row) || row;
-      /* "30개입_1" → "30개입" + 맛 구성 줄 표시 (기존 노드 유지, 텍스트 노드만 교체) */
+      /* 카페24가 렌더한 행 텍스트를 화면용으로만 정리합니다(옵션값·결제는 그대로).
+       * 결제는 행의 hidden input(item_code[] 등)이 담당하므로 표시 텍스트 정리는 안전.
+       *   1) 옵션값 suffix 제거: "30개입_1" → "30개입"
+       *   2) 카페24가 덧붙인 추가금액 표시 제거: " (+45,800원)"
+       *   3) 상품명과 옵션 사이 "-" 구분자(빈 텍스트 노드) 제거 */
       try {
         var walker = document.createTreeWalker(textEl, NodeFilter.SHOW_TEXT);
         var node;
         while ((node = walker.nextNode())) {
-          if (node.nodeValue && node.nodeValue.indexOf(value) !== -1) {
-            node.nodeValue = node.nodeValue.replace(value, label);
-          }
+          var t = node.nodeValue;
+          if (!t) continue;
+          if (t.indexOf(value) !== -1) t = t.replace(value, label);
+          t = t.replace(/\s*\(\s*\+?[\d,]+\s*원\s*\)/g, '');
+          if (/^[\s\-–—]*$/.test(t)) t = '';
+          if (t !== node.nodeValue) node.nodeValue = t;
         }
         if (summary && !textEl.querySelector('.po-row-flavors')) {
           var line = U.el('span', 'po-row-flavors', U.escapeHtml(summary));

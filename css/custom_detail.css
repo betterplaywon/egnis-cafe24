@@ -204,23 +204,32 @@
 .pd-selected #totalProducts tbody > tr:has(p.product) td:nth-child(2) { grid-area: qty; align-self: center; justify-self: start; }
 .pd-selected #totalProducts tbody > tr:has(p.product) td.right { grid-area: price; align-self: center; justify-self: end; text-align: right; }
 
-/* 수량 스테퍼 (카페24 .quantity: input + up/down 링크) */
+/* 수량 스테퍼 — 카페24 .quantity(input + up/down 링크)를 [− 1 +] 로 디자인.
+ * DOM 은 그대로 두고(카페24 수량 로직 유지) 화살표 이미지만 −/+ 기호로 대체합니다. */
 .pd-selected #totalProducts .quantity {
   display: inline-flex; align-items: center;
   border: 1px solid var(--pg-line); border-radius: 8px; overflow: hidden; background: #fff;
 }
 .pd-selected #totalProducts .quantity input {
   width: 40px; height: 34px; border: 0; text-align: center; font-weight: 700; font-size: 14px;
-  background: #fff; -moz-appearance: textfield;
+  background: #fff; -moz-appearance: textfield; padding: 0;
 }
 .pd-selected #totalProducts .quantity input::-webkit-outer-spin-button,
 .pd-selected #totalProducts .quantity input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+/* 카페24 기본 화살표 이미지 숨김 → 기호로 대체 */
+.pd-selected #totalProducts .quantity img { display: none; }
 .pd-selected #totalProducts .quantity a {
-  width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
-  order: -1;
+  position: relative; width: 34px; height: 34px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0; text-decoration: none; color: var(--pg-ink); cursor: pointer;
 }
-.pd-selected #totalProducts .quantity a.up { order: 1; }
-.pd-selected #totalProducts .quantity img { width: 12px; height: auto; }
+.pd-selected #totalProducts .quantity a.down { order: -1; border-right: 1px solid var(--pg-line); }
+.pd-selected #totalProducts .quantity a.up { order: 1; border-left: 1px solid var(--pg-line); }
+.pd-selected #totalProducts .quantity a::before {
+  font-size: 16px; font-weight: 500; line-height: 1;
+}
+.pd-selected #totalProducts .quantity a.down::before { content: "\2212"; } /* − */
+.pd-selected #totalProducts .quantity a.up::before { content: "+"; }
 
 /* 가격 */
 .pd-selected #totalProducts td.right > span:first-child { font-size: 16px; font-weight: 800; }

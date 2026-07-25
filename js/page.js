@@ -106,14 +106,24 @@
 
       var rows = getRows();
 
-      /* 카페24 합계 요소가 있으면 그 값을 신뢰 */
-      var cafeTotal = document.querySelector('[data-cafe24-total]');
-      var total = cafeTotal ? parsePrice(cafeTotal.textContent) : rows.reduce(function (sum, r) {
-        var priceCell = r.querySelector('.price, [class*="price"]');
-        var qtyInput = r.querySelector('input[type="number"], .po-stepper__value');
-        var qty = qtyInput ? parseInt(qtyInput.value || qtyInput.textContent, 10) || 1 : 1;
-        return sum + parsePrice(priceCell ? priceCell.textContent : '') * qty;
+      /* 총 상품금액 = 카페24가 각 선택상품 행에 렌더한 "가격" 셀의 합.
+       * 금액을 우리가 계산하지 않고, 카페24가 표시한 행 가격을 그대로 더합니다.
+       * 카페24 기본 스킨의 행 가격 셀은 클래스 없는 <td class="right"> 첫 <span>이고
+       * (custom_detail.css 도 동일 셀을 가격으로 스타일), 그 옆 .mileage(적립금)만
+       * 클래스를 가집니다. 그래서 첫 span 을 가격으로 읽고 .mileage 는 제외합니다.
+       * (행 가격은 이미 해당 행 수량이 반영된 값이므로 수량을 다시 곱하지 않습니다.) */
+      var rowsTotal = rows.reduce(function (sum, r) {
+        var priceCell = r.querySelector('td.right > span:not(.mileage)') ||
+          r.querySelector('.right span:not(.mileage)');
+        return sum + parsePrice(priceCell ? priceCell.textContent : '');
       }, 0);
+
+      /* 카페24 자체 합계 요소가 "실제로 채워져 있으면"(0 이 아니면) 그 값을 신뢰.
+       * 독립 선택형+추가금액 구성에서는 이 요소가 비어 있을(0) 수 있어, 그때는
+       * 위 행 가격 합계로 폴백합니다. (요소 존재만으로 신뢰하면 항상 0 이 됩니다.) */
+      var cafeTotal = document.querySelector('[data-cafe24-total]');
+      var cafeVal = cafeTotal ? parsePrice(cafeTotal.textContent) : 0;
+      var total = cafeVal > 0 ? cafeVal : rowsTotal;
 
       if (setsEl) setsEl.textContent = rows.length;
       if (priceEl) priceEl.textContent = total.toLocaleString('ko-KR');
