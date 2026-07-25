@@ -317,6 +317,26 @@
           textEl.appendChild(line);
         }
       } catch (e) { log('row beautify skip', e); }
+      tagQuantity(row);
+    }
+
+    /* 카페24 native 수량칸(.quantity: input + up/down 링크)에 우리 클래스를 찍어
+     * 맛 선택 스테퍼(.po-stepper)와 동일한 [− 1 +] 로 보이게 한다.
+     * DOM·이벤트는 그대로라 카페24 수량 증감 로직은 유지된다. 스킨 detail.css 의
+     * 세로 스택 스타일을 이기려고 CSS 를 긴 조상 셀렉터에 의존하는 대신, 행 생성
+     * 시점에 직접 클래스를 부여해 매칭을 확정한다(텍스트 정리와 같은 경로라 신뢰 가능). */
+    function tagQuantity(row) {
+      if (!row) return;
+      var box = row.querySelector('.quantity');
+      if (!box || box.classList.contains('po-qty')) return;
+      box.classList.add('po-qty');
+      var i, els;
+      els = box.querySelectorAll('input');
+      for (i = 0; i < els.length; i++) els[i].classList.add('po-qty__input');
+      els = box.querySelectorAll('a.up');
+      for (i = 0; i < els.length; i++) els[i].classList.add('po-qty__btn', 'po-qty__btn--up');
+      els = box.querySelectorAll('a.down');
+      for (i = 0; i < els.length; i++) els[i].classList.add('po-qty__btn', 'po-qty__btn--down');
     }
 
     /* 수량 입력칸을 추가입력 칸으로 오인하지 않도록 판별.
