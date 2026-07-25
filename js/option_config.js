@@ -144,10 +144,12 @@ window.PICK_OPTION_CONFIG = {
     extraInputSelector: 'textarea, input[type="text"]',
     /* 구매/장바구니 버튼 — 옵션 미선택 시 토스트를 띄우기 위한 감지용.
      * 카페24 기본 검증 로직은 그대로 두고, 앞단에서 토스트만 추가합니다.
-     * ★ 기본 스킨은 바로구매 a.btnSubmit / 장바구니 a.btnNormal.sizeL 인데
-     *   "관심상품등록"도 같은 a.btnNormal.sizeL 이라 아래 buyButtonsExclude 로
-     *   걸러냅니다. */
+     * ★ 우리 detail.html 은 시안 버튼을 .pd-actions__buy / .pd-actions__cart 로
+     *   렌더합니다(원본 btnSubmit 클래스를 쓰면 detail.css 가 시안 스타일을 덮어씀).
+     *   그래서 커스텀 클래스를 먼저 두고, 기본 스킨 클래스(btnSubmit / btnNormal.sizeL)를
+     *   폴백으로 둡니다. "관심상품등록"은 같은 계열 클래스라 buyButtonsExclude 로 거릅니다. */
     buyButtons: [
+      '.pd-actions .pd-actions__buy, .pd-actions .pd-actions__cart',
       '.xans-product-action a.btnSubmit, .xans-product-action a.btnNormal.sizeL',
       '.xans-product-action a[href*="Buy"], .xans-product-action .btnSubmit',
       '#actionButton a, #actionButton button',
