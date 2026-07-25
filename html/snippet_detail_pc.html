@@ -5,7 +5,8 @@
   1) 옵션 영역 상단에 CSS 로드
   2) #pickOptionRoot 를 기본 옵션 영역 바로 아래에 삽입
      (module="product_detail" 내부, .xans-product-option 다음 / #totalProducts 이전)
-  3) 페이지 하단에서 JS 로드 — option_config → pick_option → page 순서
+  3) 페이지 하단에서 JS 로드 — option_config → pick_util → cafe24_bridge
+     → pick_option → page 순서 (5개 모두, 순서 고정)
 
   ★ CSS·JS 는 스토어프론트 경로만 사용합니다. /web/upload/ (파일업로더) 는
     다른 도메인으로 서빙되어 404 가 납니다.
@@ -29,5 +30,7 @@
 <div id="pickOptionRoot"></div>
 
 <script src="/js/module/product/option_config.js"></script>
+<script src="/js/module/product/pick_util.js"></script>
+<script src="/js/module/product/cafe24_bridge.js"></script>
 <script src="/js/module/product/pick_option.js"></script>
 <script src="/js/module/product/page.js"></script>

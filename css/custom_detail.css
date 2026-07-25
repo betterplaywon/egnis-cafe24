@@ -1,9 +1,12 @@
 /* ============================================================
- * custom_detail.css — 상품 상세 페이지 전체 UI (Figma 시안 기준)
+ * custom_detail.css — 상품 상세 페이지 전체 UI (시안 기준)
  * 골라담기 UI(pick_option.css)와 함께 로드합니다.
  *   로드 순서: (스킨 원본 detail.css) → custom_detail.css → pick_option.css
  * ★ 스킨 원본 /css/module/product/detail.css 와 파일명을 구분합니다.
  *   같은 이름으로 올리면 기본 스킨 스타일을 덮어써 상세페이지가 깨집니다.
+ *
+ * 범위: 상세영역(.pd-page) 전용. 상단 프로모션바·헤더·GNB·플로팅 버튼은
+ *   layout.html 소관이라 이 파일에서 다루지 않습니다.
  * ============================================================ */
 :root {
   --pg-primary: #ff6b00;
@@ -34,68 +37,13 @@
 .pd-page img { max-width: 100%; display: block; }
 .pd-page :focus-visible { outline: 2px solid var(--pg-primary); outline-offset: 2px; }
 
-/* ============================================================
- * 상단 프로모션 바
- * ============================================================ */
-.hd-promo {
-  background: #111; color: #fff; font-size: 14px;
-  position: relative; text-align: center; padding: 12px 44px;
-}
-.hd-promo a { display: inline-flex; align-items: center; gap: 4px; }
-.hd-promo em { font-style: normal; color: var(--pg-primary); font-weight: 700; }
-.hd-promo__arrow { font-size: 12px; opacity: .9; }
-.hd-promo__close {
-  position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
-  color: #fff; font-size: 18px; line-height: 1; padding: 4px;
-}
-
-/* ============================================================
- * 헤더 (로고/검색/유틸)
- * ============================================================ */
-.hd { border-bottom: 1px solid var(--pg-line); background: #fff; }
-.hd__inner {
-  max-width: var(--pg-max); margin: 0 auto; padding: 22px 32px 14px;
-  display: flex; align-items: center; gap: 32px;
-}
-.hd__logo { margin: 0; font-size: 30px; font-weight: 900; letter-spacing: -1px; flex: 0 0 auto; }
-.hd__search {
-  margin-left: auto; flex: 0 1 400px; display: flex; align-items: center; gap: 8px;
-  background: var(--pg-bg-soft); border-radius: 10px; padding: 0 16px; height: 46px;
-}
-.hd__search svg { flex: 0 0 auto; }
-.hd__search input {
-  flex: 1; border: 0; background: transparent; font-size: 14px; color: var(--pg-ink); min-width: 0;
-}
-.hd__search input::placeholder { color: var(--pg-gray-light); }
-.hd__search input:focus { outline: none; }
-.hd__utils { display: flex; gap: 22px; flex: 0 0 auto; }
-.hd__util {
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-  font-size: 12px; color: var(--pg-ink); position: relative;
-}
-.hd__util svg { width: 26px; height: 26px; }
-.hd__badge {
-  position: absolute; top: -4px; right: 2px;
-  min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px;
-  background: var(--pg-primary); color: #fff; font-size: 11px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-}
-
-/* ---------- GNB ---------- */
-.gnb { max-width: var(--pg-max); margin: 0 auto; padding: 6px 32px 16px; display: flex; align-items: center; }
-.gnb__menu { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: 36px; font-size: 16px; font-weight: 600; }
-.gnb__menu a { display: inline-flex; align-items: center; gap: 8px; padding: 6px 0; }
-.gnb__menu .is-active a { color: var(--pg-primary); }
-.gnb__event {
-  margin-left: auto; display: inline-flex; align-items: center; gap: 5px;
-  border: 1px solid #ffd7bd; color: var(--pg-primary); font-weight: 700; font-size: 14px;
-  border-radius: 20px; padding: 8px 16px; background: #fff;
-}
+/* 상세페이지에서는 스킨 원본 breadcrumb(.path)를 최소화 */
+.pd-page + .path, .path[module="product_headcategory"] { max-width: var(--pg-max); margin: 0 auto; }
 
 /* ============================================================
  * 본문 2컬럼 레이아웃
  * ============================================================ */
-.pd { max-width: var(--pg-max); margin: 0 auto; padding: 40px 32px 120px; }
+.pd { max-width: var(--pg-max); margin: 0 auto; padding: 32px 32px 120px; }
 .pd__inner { display: flex; gap: 56px; align-items: flex-start; }
 .pd__left { flex: 1 1 auto; min-width: 0; }
 .pd__right { flex: 0 0 490px; position: sticky; top: 24px; }
@@ -103,25 +51,24 @@
 /* ---------- 갤러리 ---------- */
 .pd-gallery { position: relative; background: var(--pg-bg-soft); border-radius: 4px; overflow: hidden; }
 .pd-gallery img { width: 100%; height: auto; }
-.pd-gallery__pager {
-  position: absolute; right: 16px; bottom: 16px;
-  background: rgba(60,60,60,.75); color: #fff; font-size: 13px;
-  border-radius: 14px; padding: 4px 12px; letter-spacing: 1px;
-}
-.pd-gallery__pager em { font-style: normal; opacity: .6; }
+/* 카페24 이미지 모듈 부속(썸네일 리스트/확대/컬러칩)은 갤러리 하단에 정렬 */
+.pd-gallery .listImg ul { display: flex; gap: 8px; margin: 10px 0 0; padding: 0; list-style: none; }
+.pd-gallery .listImg img { width: 100%; height: auto; border-radius: 4px; }
+.pd-gallery .control { padding: 8px 12px; text-align: right; }
+.pd-gallery .control img { display: inline; vertical-align: middle; }
 
-/* ---------- 탭 ---------- */
-.pd-tabs { display: flex; border-bottom: 1px solid var(--pg-line); margin-top: 4px; }
+/* ---------- 탭 (정적 라벨 · 클릭 전환 없음) ---------- */
+.pd-tabs { display: flex; border-bottom: 1px solid var(--pg-line); margin-top: 20px; }
 .pd-tabs__tab {
   flex: 1; text-align: center; padding: 18px 8px; font-size: 16px; font-weight: 600;
   color: var(--pg-gray); border-bottom: 2px solid transparent; margin-bottom: -1px;
+  cursor: default;
 }
 .pd-tabs__tab.is-active { color: var(--pg-primary); border-bottom-color: var(--pg-primary); }
 
 /* ---------- 상세 컨텐츠 ---------- */
 .pd-content { padding-top: 0; }
 .pd-content img { width: 100%; }
-.pd-content__section { scroll-margin-top: 80px; }
 
 /* ============================================================
  * 우측 상품 정보 패널
@@ -132,10 +79,11 @@
 .pd-badge--mall { background: #f1f1f1; color: #555; font-weight: 600; }
 
 .pd-title { margin: 0 0 8px; font-size: 24px; font-weight: 800; letter-spacing: -.5px; }
+.pd-page .headingArea { margin: 0; }
 .pd-sub { margin: 0 0 18px; color: var(--pg-gray); font-size: 15px; }
 .pd-was { margin: 0 0 2px; color: var(--pg-gray-light); font-size: 15px; text-decoration: line-through; }
 .pd-price { margin: 0 0 18px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-.pd-price__rate { font-size: 26px; font-weight: 800; color: var(--pg-primary); }
+.pd-price__rate { font-style: normal; font-size: 26px; font-weight: 800; color: var(--pg-primary); }
 .pd-price__amount { font-size: 28px; font-weight: 800; letter-spacing: -.5px; }
 .pd-price__each { color: var(--pg-gray); font-size: 15px; }
 
@@ -162,18 +110,93 @@
 .pd-ship__line--sub { color: var(--pg-gray); }
 .pd-ship strong { font-weight: 700; }
 
-/* ---------- 선택한 옵션 (카페24 totalProducts 스타일) ---------- */
+/* ============================================================
+ * 선택한 옵션 — 카페24 기본 #totalProducts <table> 을 그대로 카드화
+ * (DOM 삭제·이동 없음. 실제 렌더 마크업만 CSS 로 재배치)
+ *   행 구조: <tr>
+ *     <td> <p class="product">개입수<br><span>옵션</span> + .po-row-flavors </td>
+ *     <td> <span class="quantity"><input.quantity_opt> up/down </span> + .option_box_del </td>
+ *     <td class="right"> <span>가격</span> + .mileage </td>
+ *   </tr>
+ * ============================================================ */
 .pd-selected { margin-top: 14px; }
 .pd-selected__title { font-size: 14px; color: var(--pg-ink); margin: 0 0 10px; font-weight: 600; }
 .pd-selected[data-empty="true"] { display: none; }
-.pd-selected .option_products { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-.pd-selected-item { background: #f7f7f7; border-radius: 10px; padding: 16px; position: relative; }
-.pd-selected-item__name { font-size: 15px; font-weight: 700; display: block; margin-bottom: 4px; }
-.pd-selected-item__flavors, .pd-selected-item .po-row-flavors { color: var(--pg-gray); font-size: 13px; line-height: 1.5; padding-right: 24px; }
-.pd-selected-item__del { position: absolute; right: 12px; top: 12px; font-size: 16px; color: #999; padding: 4px; }
-.pd-selected-item__foot { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
-.pd-selected-item__price { font-size: 16px; font-weight: 800; }
-/* 수량 스테퍼는 pick_option.css 의 .po-stepper 재사용 */
+
+/* 안내 문구/캡션/헤더 숨김 (카드에는 컬럼 헤더가 없습니다) */
+.pd-selected #totalProducts > p.ec-base-help { display: none; }
+.pd-selected #totalProducts caption,
+.pd-selected #totalProducts colgroup,
+.pd-selected #totalProducts thead { display: none; }
+
+/* 표 → 세로 카드 스택. 실제 담긴 행은 <p class="product"> 를 가지므로
+ * :has(p.product) 로 카페24 템플릿/합계/옵션 서브행과 구분합니다. */
+.pd-selected #totalProducts,
+.pd-selected #totalProducts > table { display: block; width: 100%; border: 0; }
+.pd-selected #totalProducts table { border-collapse: collapse; }
+.pd-selected #totalProducts tbody { display: block; }
+.pd-selected #totalProducts tbody:empty { display: none; }
+
+/* 각 담긴 행 = 카드. 이름은 전체 폭, 아래 줄에 수량(좌)·가격(우). */
+.pd-selected #totalProducts tbody > tr:has(p.product) {
+  display: grid; position: relative;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "name name"
+    "qty  price";
+  gap: 12px;
+  background: #f7f7f7; border: 0; border-radius: 10px;
+  padding: 16px; margin-bottom: 10px;
+}
+.pd-selected #totalProducts tbody > tr:has(p.product):last-child { margin-bottom: 0; }
+/* 옵션(추가입력/파일) 내부 행은 카드로 만들지 않습니다 */
+.pd-selected #totalProducts tbody > tr.option { display: none; }
+
+.pd-selected #totalProducts tbody > tr:has(p.product) td { display: block; border: 0; padding: 0; }
+/* 상품명 셀 (이름 + 맛 구성) — 삭제 X 를 위해 우측 여백 확보 */
+.pd-selected #totalProducts tbody > tr:has(p.product) td:first-child { grid-area: name; padding-right: 26px; }
+.pd-selected #totalProducts p.product { margin: 0; font-size: 15px; font-weight: 700; }
+.pd-selected #totalProducts p.product span,
+.pd-selected #totalProducts .po-row-flavors {
+  display: block; margin-top: 4px; color: var(--pg-gray); font-size: 13px; font-weight: 400; line-height: 1.5;
+}
+
+/* 수량(좌) · 가격(우) 한 줄 */
+.pd-selected #totalProducts tbody > tr:has(p.product) td:nth-child(2) { grid-area: qty; align-self: center; justify-self: start; }
+.pd-selected #totalProducts tbody > tr:has(p.product) td.right { grid-area: price; align-self: center; justify-self: end; text-align: right; }
+
+/* 수량 스테퍼 (카페24 .quantity: input + up/down 링크) */
+.pd-selected #totalProducts .quantity {
+  display: inline-flex; align-items: center;
+  border: 1px solid var(--pg-line); border-radius: 8px; overflow: hidden; background: #fff;
+}
+.pd-selected #totalProducts .quantity input {
+  width: 40px; height: 34px; border: 0; text-align: center; font-weight: 700; font-size: 14px;
+  background: #fff; -moz-appearance: textfield;
+}
+.pd-selected #totalProducts .quantity input::-webkit-outer-spin-button,
+.pd-selected #totalProducts .quantity input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.pd-selected #totalProducts .quantity a {
+  width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center;
+  order: -1;
+}
+.pd-selected #totalProducts .quantity a.up { order: 1; }
+.pd-selected #totalProducts .quantity img { width: 12px; height: auto; }
+
+/* 가격 */
+.pd-selected #totalProducts td.right > span:first-child { font-size: 16px; font-weight: 800; }
+.pd-selected #totalProducts .mileage { display: none; }
+
+/* 삭제(X) — 카드 우상단 */
+.pd-selected #totalProducts a:has(> .option_box_del),
+.pd-selected #totalProducts .option_box_del {
+  grid-area: del; justify-self: end;
+}
+.pd-selected #totalProducts a:has(> .option_box_del) {
+  position: absolute; right: 12px; top: 12px; width: 22px; height: 22px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.pd-selected #totalProducts .option_box_del { width: 14px; height: 14px; opacity: .5; }
 
 /* ---------- 구매 소셜프루프 ---------- */
 .pd-social {
@@ -202,34 +225,32 @@
 .pd-total__sets strong { font-weight: 800; }
 .pd-total__price { font-size: 24px; font-weight: 800; }
 .pd-total__price strong { font-size: 28px; }
+.pd-price-warn { color: var(--pg-gray); font-size: 12px; margin: -6px 0 14px; }
 
-.pd-actions { display: flex; gap: 10px; }
+.pd-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
 .pd-actions__cart {
   flex: 0 0 56px; height: 56px; border: 1px solid #ddd; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center; background: #fff;
+  display: flex; align-items: center; justify-content: center; background: #fff; color: var(--pg-ink);
 }
 .pd-actions__npay {
-  flex: 1; height: 56px; border-radius: 10px; background: #111; color: #fff;
+  flex: 1; min-height: 56px; border-radius: 10px; background: #111; color: #fff;
   display: flex; align-items: center; justify-content: center; gap: 2px;
-  font-weight: 800; font-size: 17px;
+  font-weight: 800; font-size: 17px; overflow: hidden;
 }
-.pd-actions__npay .npay-n {
-  width: 22px; height: 22px; border-radius: 5px; background: #03c75a; color: #fff;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 15px; font-weight: 900; margin-right: 4px;
-}
+.pd-actions__npay:empty::before { content: "N pay"; }
 .pd-actions__buy {
   flex: 1.3; height: 56px; border-radius: 10px; background: var(--pg-primary); color: #fff;
   font-size: 17px; font-weight: 800; display: flex; align-items: center; justify-content: center;
 }
-
-/* ---------- 플로팅 (도움말/맨위로) ---------- */
-.pd-float { position: fixed; right: 28px; bottom: 28px; display: flex; flex-direction: column; gap: 12px; z-index: 900; }
-.pd-float__btn {
-  width: 52px; height: 52px; border-radius: 50%; background: #fff; border: 1px solid #eee;
-  box-shadow: 0 4px 14px rgba(0,0,0,.12); display: flex; align-items: center; justify-content: center; font-size: 20px;
+.pd-actions__soldout {
+  flex: 1; height: 56px; border-radius: 10px; background: #bbb; color: #fff;
+  font-size: 17px; font-weight: 800; display: flex; align-items: center; justify-content: center;
 }
-.pd-float__btn--help { background: #1c86ff; color: #fff; border: 0; font-weight: 800; }
+/* 관심상품 — 시안 버튼 행 밖. 작은 텍스트 링크로 처리 */
+.pd-actions__wish {
+  flex-basis: 100%; order: 9; text-align: center; color: var(--pg-gray);
+  font-size: 13px; text-decoration: underline; margin-top: 6px;
+}
 
 /* ============================================================
  * 모바일 (~767px)
@@ -247,21 +268,10 @@
 @media (max-width: 767px) {
   :root { --pg-buybar-h: 72px; }
 
-  .hd-promo { font-size: 12px; padding: 10px 36px; }
-  .hd__inner { padding: 12px 16px; gap: 16px; }
-  .hd__logo { font-size: 22px; }
-  .hd__logo { order: 2; margin-right: auto; }
-  .hd__menu-btn { order: 1; display: block; }
-  .hd__search { display: none; }             /* 모바일: 검색은 아이콘으로 */
-  .hd__utils { order: 3; gap: 16px; }
-  .hd__util span { display: none; }          /* 라벨 숨김, 아이콘만 */
-  .hd__util svg { width: 24px; height: 24px; }
-  .gnb { display: none; }
-
   .pd { padding: 0 0 calc(var(--pg-buybar-h) + 16px); }
   .pd__inner { display: block; }
   .pd-gallery { border-radius: 0; }
-  .pd-tabs { position: sticky; top: 0; background: #fff; z-index: 10; }
+  .pd-tabs { position: sticky; top: 0; background: #fff; z-index: 10; margin-top: 0; }
   .pd-tabs__tab { font-size: 14px; padding: 14px 4px; }
 
   /* 우측 패널 → 본문 아래로 흘려보내되, 옵션 영역은 시트로 분리 */
@@ -270,7 +280,6 @@
   .pd-price__rate { font-size: 24px; }
   .pd-price__amount { font-size: 26px; }
   .pd-actions { display: none; }             /* PC 버튼 숨김 → 하단 고정바 사용 */
-  .pd-float { display: none; }
 
   /* 하단 고정 구매바 */
   .pd-buybar {
@@ -286,7 +295,7 @@
     flex: 1.4; height: 48px; border-radius: 10px; background: var(--pg-primary); color: #fff;
     font-size: 15px; font-weight: 800; display: flex; align-items: center; justify-content: center;
   }
-  /* 시트 열림 상태에서는 Npay 포함 3버튼형 */
+  /* 시트 열림 상태에서는 Npay 포함 3버튼형 (시안: 장바구니 아이콘 · N pay · 바로구매) */
   .pd-buybar--sheet .pd-buybar__cart { flex: 0 0 52px; font-size: 18px; }
   .pd-buybar--sheet .pd-buybar__cart span { display: none; }
   .pd-buybar--sheet .pd-buybar__npay {
@@ -329,10 +338,13 @@
   /* 시트 내부 요약 위젯 간격 */
   .pd-sheet .pd-freeship { border-bottom: 0; }
   .pd-sheet .pd-total { padding: 6px 0 0; }
+  .pd-price-warn { display: none; }
+
+  /* 모바일 선택 카드도 동일하게 유지 */
+  .pd-selected #totalProducts tbody > tr:has(p.product) { padding: 14px; }
 }
 
 @media (min-width: 768px) {
-  .hd__menu-btn { display: none; }
   .pd-sheet-dim { display: none; }
 }
 

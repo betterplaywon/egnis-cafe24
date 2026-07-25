@@ -1,11 +1,20 @@
 <!--
- [카페24 스킨] 상품 상세 detail.html — 골라담기 통합본
- 기본 스킨의 모듈/치환변수를 보존한 채 레이아웃만 좌(이미지·탭) /
- 우(정보·옵션·구매)로 재구성했습니다. 자세한 규칙은 README.md 참고.
+ [카페24 스킨] 상품 상세 detail.html — 골라담기 통합본 (시안 기준)
+ ------------------------------------------------------------------
+ - 레이아웃은 시안(PC/모바일)을 기준으로 좌(이미지·탭·상세) / 우(정보·옵션·구매)
+   2컬럼으로 구성합니다. 상단 프로모션바·헤더·GNB·플로팅 버튼은 layout.html
+   소관이므로 이 파일에서 렌더하지 않습니다.
+ - 구매·장바구니·금액 계산은 전부 카페24 기본 로직에 위임합니다. 이 템플릿은
+   기본 옵션 요소를 CSS 로 숨기고, 골라담기 UI 가 그 요소를 조작하게 할 뿐입니다.
+ - 카페24 기능 DOM(옵션 select/텍스트버튼, #totalProducts, 수량, 버튼 onclick)은
+   삭제하지 말고 위치만 이동합니다. 자세한 규칙은 CLAUDE.md / README.md 참고.
+ - 스크립트 로드 순서(고정):
+     option_config → pick_util → cafe24_bridge → pick_option → page
 -->
 
 <style>
-  /* 카페24 기본 옵션 영역: 숨김만 (삭제 금지 — 골라담기가 이 안의 버튼을 클릭합니다) */
+  /* 카페24 기본 옵션 영역: 화면에서만 숨김 (삭제 금지 — 골라담기가 이 안의
+     옵션 버튼/select 를 조작해 담기를 수행합니다). */
   .pd-cafe24-option { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 </style>
 
@@ -39,7 +48,7 @@
     <main class="pd">
       <div class="pd__inner">
 
-        <!-- ==================== 좌측: 이미지 + 탭 ==================== -->
+        <!-- ==================== 좌측: 이미지 + 탭 + 상세 ==================== -->
         <section class="pd__left">
 
             <div class="imgArea pd-gallery" module="product_image">
@@ -72,120 +81,71 @@
                 </div>
 
                 <!--@import(/product/shoppQ/hashtag.html)-->
-
-                <div class="ec-base-button gColumn" module="product_action">
-                    <a href="#none" class="btnNormal sizeM" onclick="{$action_recommend}">추천메일 보내기</a>
-                    <a href="#none" class="btnNormal sizeM {$request_display|display}" onclick="{$action_request}">상품조르기</a>
-                    <a href="/board/inquiry/write.html{$inquiry_param}" class="btnNormal sizeM {$inquiry_display|display}">대량구매문의</a>
-                </div>
-
-                <div class="likeButton {$disp_likeprd_class}">
-                    <button type="button"><span class="title">좋아요</span>{$disp_likeprd_icon}<span class="count">{$disp_likeprd_count}</span></button>
-                </div>
             </div>
 
-            <!-- 탭: 아래 product_additional 블록의 앵커로 이동합니다 -->
-            <nav class="pd-tabs">
-                <a class="pd-tabs__tab is-active" href="#prdDetail">상세정보</a>
-                <a class="pd-tabs__tab" href="#prdReview">리뷰</a>
-                <a class="pd-tabs__tab" href="#prdInfo">구매안내</a>
-                <a class="pd-tabs__tab" href="#prdQnA">상품Q&amp;A</a>
+            <!-- 탭: 시안 기준 정적 라벨 (클릭 전환 없음 — 사용자 요청으로 제거).
+                 아래 상세설명/리뷰/영양정보/구매안내 컨텐츠는 스크롤로 이어봅니다. -->
+            <nav class="pd-tabs" aria-hidden="true">
+                <span class="pd-tabs__tab is-active">상세정보</span>
+                <span class="pd-tabs__tab">리뷰</span>
+                <span class="pd-tabs__tab">영양정보</span>
+                <span class="pd-tabs__tab">구매안내</span>
             </nav>
+
+            <div class="pd-content">
+                <!-- ★CAFE24: 상품 상세설명(에디터/이미지) 영역.
+                     관리자 > 상품 > 상세설명 내용이 이 자리에 렌더됩니다.
+                     스킨 원본의 상세설명 출력 블록을 이 위치에 그대로 두세요. -->
+            </div>
         </section>
 
         <!-- ==================== 우측: 정보 + 옵션 + 구매 ==================== -->
         <aside class="pd__right infoArea">
 
+            <div class="pd-badges">
+                <span class="pd-badge pd-badge--best">&#9889; 온라인 최저가</span>
+                <span class="pd-badge pd-badge--mall">한끼통살 공식몰</span>
+            </div>
+
+            <!-- 상품명은 치환변수. 나머지 상세 문구(요약·가격·평점·배송)는 카페24
+                 치환변수가 스킨마다 달라, 시안 문구를 정적으로 두고 값은 관리자에서
+                 교체합니다(★CAFE24 표시). -->
             <div class="headingArea">
                 <h2 class="pd-title">{$name}</h2>
-                <span class="delivery {$delvtype_display|display}">(해외배송 가능상품)</span>
-                <span class="icon">{$soldout_icon} {$stock_icon} {$recommend_icon} {$new_icon} {$product_icons} {$today_arrival_icon} {$pickup_icon} {$benefit_icons} <img src="//img.echosting.cafe24.com/design/skin/admin/ko_KR/ico_rental.png" alt="" class="{$rental_information_display|display}"> {$regular_delivery_icon} {$cultural_tax_icon}</span>
-                <!-- 공급사 바로가기버튼 영역 -->
-                <div class="supply {$supply_link_display|display}">
-                    <span>{$supply_top_logo}</span>
-                    <a href="#none" onclick="{$supply_go_action}"><img src="{$supply_go_img}" alt="공급사 바로가기" /></a>
+            </div>
+            <p class="pd-sub"><!-- ★CAFE24: 상품 요약설명 -->최저가로 즐기는 통살 닭가슴살 100개 골라담기</p>
+
+            <p class="pd-was"><!-- ★CAFE24: 소비자가 -->33,000원</p>
+            <p class="pd-price">
+                <em class="pd-price__rate">25%</em>
+                <strong class="pd-price__amount"><!-- ★CAFE24: 판매가 -->24,700원</strong>
+                <span class="pd-price__each">(개당 2,470원)</span>
+            </p>
+
+            <a class="pd-coupon" href="/member/join.html">
+                &#127903; 1초 가입 후 <em>쿠폰팩 받기</em> <span class="pd-coupon__arrow">&#8250;</span>
+            </a>
+
+            <p class="pd-rating">
+                <span class="pd-rating__star">&#9733;</span> 4.9
+                <span class="pd-rating__dot">&middot;</span>
+                <a href="#none">리뷰 23,504</a><!-- ★CAFE24: 평점/리뷰 수 -->
+            </p>
+
+            <dl class="pd-ship">
+                <div class="pd-ship__row">
+                    <dt>출고정보</dt>
+                    <dd>
+                        <span class="pd-ship__today">&#9889; 오늘출발</span>
+                        <span class="pd-ship__line">평일 14시 / 주말 9시 이전 결제시 당일출고</span>
+                        <span class="pd-ship__line pd-ship__line--sub">공휴일 제외, 주문량에 따라 최대 5영업일 이내 출고</span>
+                    </dd>
                 </div>
-                <!-- //공급사 바로가기버튼 영역 -->
-            </div>
-
-            <!-- 상품 기본정보(판매가·소비자가 등)는 관리자 > 상품 > 상세정보 표시설정 기준 -->
-            <div module="product_detaildesign">
-                <!--
-                    출력 갯수 지정 변수, 없으면 설정된 전체가 나옵니다.
-                    count = 10
-                -->
-                <table border="1" summary="">
-                    <caption>{$name} 기본 정보</caption>
-                    <tbody>
-                    <tr class="{$item_display|display}">
-                        <th scope="row">{$item_title}</th>
-                        <td>{$item_content}</td>
-                    </tr>
-                    <tr class="{$item_display|display}">
-                        <th scope="row">{$item_title}</th>
-                        <td>{$item_content}</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!--- 렌탈서비스 -->
-            <table border="1" summary="" class="{$rental_information_display|display}">
-                <tbody>
-                <tr class="rental">
-                    <th scope="row">월 렌탈 금액</th>
-                    <td>
-                        <p class="rental-maximum">월 <span class="rental-maximum-price">{$rental_maximum_price|numberformat}</span>원</p><span>(<span class="rental-maximum-term">{$rental_maximum_term}</span>개월 기준)</span>
-                        <ul module="product_rental">
-                            <li><span class="rental-term">{$rental_term}</span>개월 / 월 <span class="rental-price">{$rental_price|numberformat}</span>원</li>
-                            <li><span class="rental-term">{$rental_term}</span>개월 / 월 <span class="rental-price">{$rental_price|numberformat}</span>원</li>
-                        </ul>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-
-            <div class="regularDelivery {$regular_delivery_display|display}">
-                <table border="1" summary="정기결제">
-                    <caption>정기결제</caption>
-                    <tbody>
-                    <tr>
-                        <th scope="row">구매방법</th>
-                        <td>
-                            <label class="gLabel"><span class="{$one_time_purchase_display|display}">{$regular_deliveryT}</span> 정기배송<span class="badge {$regular_delivery_discount_display|display}">{$max_discount_value} <i class="icoDown">할인</i></span></label>
-                            <label class="gLabel {$one_time_purchase_display|display}">{$regular_deliveryF} 1회구매</label>
-                        </td>
-                    </tr>
-                    <tr class="shippingCycle {$regular_cycle_period|display}" id="{$regular_cycle_period_id}">
-                        <th scope="row">배송주기</th>
-                        <td>{$regularPeriod}</td>
-                    </tr>
-                    <tr class="shippingNum {$regular_count_display|display}" id="{$regular_count_id}">
-                        <th scope="row">정기배송 횟수</th>
-                        <td>{$regularCount}</td>
-                    </tr>
-                    <tr class="shippingGuide" id="{$regular_info_id}">
-                        <th scope="row"><span class="displaynone">안내사항</span></th>
-                        <td>
-                            <div class="info {$regular_delivery_discount_display|display}" id="{$regular_delivery_discount_id}">
-                                <p class="title"><strong>정기배송 할인</strong> <span class="icoSave">save</span></p>
-                                <ul module="product_regularDiscount">
-                                    <li>{$discount_count}차 이상 구매 시 : {$discount_value} <span class="icoDown">할인</span></li>
-                                    <li>{$discount_count}차 이상 구매 시 : {$discount_value} <span class="icoDown">할인</span></li>
-                                </ul>
-                            </div>
-                            <div class="info">
-                                <ul class="ec-base-help typeDash txt11">
-                                    <li>배송주기, 정기배송 횟수는 상품 전체에 동일하게 적용됩니다.</li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <p class="{$naver_mileage_exception_display|display}"><img src="//img.echosting.cafe24.com/skin/base_ko_KR/product/txt_naver.gif" alt="개인결제창을 통한 결제 시 네이버 마일리지 적립 및 사용이 가능합니다." /></p>
+                <div class="pd-ship__row">
+                    <dt>배송비</dt>
+                    <dd><strong>3,000원</strong> (4만원 이상 구매 시 무료배송)</dd><!-- ★CAFE24: 배송비 -->
+                </div>
+            </dl>
 
             <!-- 옵션 영역 — 모바일에서는 page.js 가 바텀시트로 동작시킵니다. -->
             <div id="pdOptionSheet" class="pd-sheet">
@@ -235,12 +195,9 @@
                     </tbody>
                 </table>
 
-                <div class="guideArea">
-                    <p class="info {$limit_display|display}">(최소주문수량 {$minimum_limit}개 이상<span class="{$maximum_limit_display|display}"> / 최대주문수량 {$maximum_limit}개 이하</span>)</p>
-                    <span class="sizeGuide {$size_guide_display|display}"><a href="#none" class="{$size_guide_class}" product_no="{$product_no}">사이즈 가이드</a></span>
-                </div>
-
-                <!-- ⛔ 선택상품 목록 — 골라담기가 담기 결과를 확인하는 대상. 구조 유지 필수 -->
+                <!-- ⛔ 선택상품 목록 — 골라담기가 담기 결과를 확인하는 대상. 구조 유지 필수.
+                     시안의 "선택한 옵션" 카드는 custom_detail.css 가 아래 카페24 기본
+                     <table> 마크업을 그대로 카드화합니다(DOM 삭제·이동 없음). -->
                 <div class="pd-selected" data-empty="true">
                     <p class="pd-selected__title">선택한 옵션</p>
 
@@ -335,6 +292,9 @@
                     </div>
                 </div>
 
+                <!-- 오늘 N명이 구매했어요 — 카페24 치환변수 없음. 정적 문구(관리자 교체). -->
+                <div class="pd-social"><span class="pd-social__coin">W</span> 오늘 <strong>N명</strong>이 구매했어요</div>
+
                 <!-- 무료배송 진행바 (page.js 가 카페24 합계를 읽어 표시만 갱신) -->
                 <div class="pd-freeship">
                     <div class="pd-freeship__bar">
@@ -347,31 +307,44 @@
                     </div>
                 </div>
 
-                <!-- data-cafe24-total 은 금액 <em> 에만 붙입니다. wrapper 에 붙이면
-                     page.js 가 수량 "(N개)" 를 금액으로 오독합니다. -->
-                <div id="{$total.total_price_id}" class="totalPrice">
+                <!-- ⛔ 카페24 총금액 블록 — 화면에서만 감춤. 삭제 금지.
+                     카페24가 이 안의 {$total.total_cnt} 요소에 실제 합계를 씁니다.
+                     data-cafe24-total 은 그 금액 <em> 에만 붙여, page.js 가 카페24
+                     계산값을 그대로 읽어 아래 표시용 위젯에 반영하게 합니다. -->
+                <div id="{$total.total_price_id}" class="totalPrice pd-cafe24-option">
                     <p class="ec-base-help txtWarn txt11 {$exclusive_purchase_olny|display}"> 단독구매상품</p>
                     <strong>총 상품금액</strong>(수량) : <span class="{$total.total_cnt}"><strong><em data-cafe24-total>0</em></strong> (0개)</span>
                 </div>
-                <p class="ec-base-help txt11 {$price_warning_class}">할인가가 적용된 최종 결제예정금액은 주문 시 확인할 수 있습니다.</p>
+
+                <!-- 총 세트/금액 표시 — page.js 가 위 카페24 합계를 읽어 표시만 갱신 -->
+                <div class="pd-total">
+                    <span class="pd-total__sets">총 <strong data-pd-total-sets>0</strong>세트</span>
+                    <span class="pd-total__price">총 <strong data-pd-total-price>0</strong>원</span>
+                </div>
+                <p class="ec-base-help txt11 {$price_warning_class} pd-price-warn">할인가가 적용된 최종 결제예정금액은 주문 시 확인할 수 있습니다.</p>
             </div>
             <div class="pd-sheet-dim" hidden></div>
 
-            <!-- ⛔ 구매 버튼 — onclick 치환변수 유지 필수 -->
+            <!-- ⛔ 구매 버튼 — onclick 치환변수 유지 필수. 시안의 [장바구니][N pay][바로구매]
+                 3버튼을 카페24 원본 액션에 클래스만 부여해 구성합니다. 모바일 하단 구매바가
+                 pd-buy-main / pd-cart-main 을 data-proxy 로 대신 클릭합니다. -->
             <div module="product_action">
-                <div class="ec-base-button gColumn pd-actions">
-                    <a href="#none" class="btnSubmit sizeL pd-buy-main {$buy_display|display}" onclick="{$action_buy}">
+                <div class="ec-base-button pd-actions">
+                    <a href="#none" class="pd-actions__cart pd-cart-main {$basket_display|display}" onclick="{$action_basket}" aria-label="장바구니 담기">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+                    </a>
+
+                    <!-- 네이버페이 구매 버튼 (카페24/네이버 스크립트가 주입) -->
+                    <div id="NaverChk_Button" class="pd-actions__npay"></div>
+
+                    <a href="#none" class="pd-actions__buy pd-buy-main {$buy_display|display}" onclick="{$action_buy}">
                         <span id="{$btn_buy_id}">바로 구매하기</span>
                         <span id="{$btn_reserve_id}" class="{$btn_reserve_class|display}">예약주문</span>
                         <span id="{$btn_regular_delivery_id}" class="{$btn_regular_delivery|display}">정기배송 신청하기</span>
                     </a>
-                    <a href="#none" class="btnNormal sizeL pd-cart-main {$basket_display|display}" onclick="{$action_basket}">장바구니 담기</a>
-                    <span class="btnEm sizeL gFlex2 {$soldout_display|display}">SOLD OUT</span>
-                    <a href="#none" onclick="{$action_wishlist}" class="btnNormal sizeL {$wishlist_display|display}">관심상품등록</a>
+                    <span class="btnEm sizeL pd-actions__soldout {$soldout_display|display}">SOLD OUT</span>
+                    <a href="#none" onclick="{$action_wishlist}" class="pd-actions__wish {$wishlist_display|display}">관심상품등록</a>
                 </div>
-
-                <!-- 네이버 체크아웃 구매 버튼 -->
-                <div id="NaverChk_Button"></div><!-- //네이버 체크아웃 구매 버튼 -->
 
                 <!-- 상품상세페이지에 추가되는 앱 관련 결제버튼's div -->
                 <div id="{$app_payment_button_box_id}"></div>
@@ -409,11 +382,13 @@
 </div>
 
 <!-- 모바일 하단 고정 구매바 — 시트가 닫혀 있으면 먼저 옵션 시트를 엽니다.
-     열려 있을 때는 가로채지 않고 위 카페24 버튼을 그대로 클릭시킵니다. -->
+     열려 있을 때는 가로채지 않고 위 카페24 버튼(data-proxy)을 그대로 클릭시킵니다. -->
 <div class="pd-buybar">
-    <button type="button" class="pd-buybar__cart" data-open-sheet data-proxy=".pd-cart-main">
+    <button type="button" class="pd-buybar__cart" data-open-sheet data-proxy=".pd-cart-main" aria-label="장바구니">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
         <span>장바구니</span>
     </button>
+    <button type="button" class="pd-buybar__npay" data-open-sheet data-proxy="#NaverChk_Button a, #NaverChk_Button button"><span class="npay-n">N</span> pay</button>
     <button type="button" class="pd-buybar__buy" data-open-sheet data-proxy=".pd-buy-main">바로 구매하기</button>
 </div>
 
@@ -421,8 +396,9 @@
      (상세정보/구매안내/후기/Q&A/관련상품)을 수정 없이 이어붙이세요.
      ※ HTML 주석은 중첩되지 않으므로 이 안내문에 예시 마크업을 넣지 마세요. -->
 
-<!-- 로드 순서 고정: option_config → pick_option → page -->
-
+<!-- 로드 순서 고정: option_config → pick_util → cafe24_bridge → pick_option → page -->
 <script src="/js/module/product/option_config.js"></script>
+<script src="/js/module/product/pick_util.js"></script>
+<script src="/js/module/product/cafe24_bridge.js"></script>
 <script src="/js/module/product/pick_option.js"></script>
 <script src="/js/module/product/page.js"></script>

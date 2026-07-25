@@ -12,15 +12,17 @@
 
 ## ▶ 지금 상태 / 다음 시작점 (새 세션은 여기부터)
 
-- **Phase 1(JS 책임 분리) 완료.** 작업 트리 clean, 마지막 커밋 `1a80d7a`.
-- JS 5파일 구조 확정: `option_config → pick_util → cafe24_bridge → pick_option → page`.
-  전역 노출은 `window.PickOption` 1개(`utils`/`bridge`/공개 메서드).
-- **아직 검토 전.** 사용자가 리팩토링 결과물을 확인하는 단계. 필요 시 테스트몰에
-  5파일 올리고 콘솔에서 `PickOption.diagnose()` 로 6개 점검 확인.
-- **다음 작업 = Phase 2 (html/detail.html 신규 작성).** ⚠️ detail.html 은 아직
-  옛 3파일 스크립트(`option_config → pick_option → page`)를 로드 중 —
-  Phase 2 에서 **5파일 로드 순서로 갱신 필수**. snippet_detail_*.html 도 동일.
-- 단계별 상세는 [REFACTOR.md](REFACTOR.md), 남은 계획은 아래 §3 진행 상황 표 참고.
+- **Phase 1(JS 분리) + Phase 2·3(detail.html·custom_detail.css 시안 재작성) 완료.**
+  JS 5파일 구조: `option_config → pick_util → cafe24_bridge → pick_option → page`.
+  detail.html / snippet 2종 모두 **5파일 로드 순서로 갱신 완료**.
+- detail.html = 시안 우측 패널 마크업 + 실제 카페24 보호 DOM 병합, 탭은 정적 라벨.
+  custom_detail.css = 죽은 코드(헤더/GNB/프로모션바/플로팅) 제거 + 실제 `#totalProducts`
+  `<table>` 카드화(`tr:has(p.product)`). 상세 내역은 [REFACTOR.md](REFACTOR.md) Phase 2·3.
+- **아직 몰 검증 전.** 로컬 자동 테스트 없음(§2 결정). 테스트몰에 올리고
+  `PickOption.diagnose()` + PC(1440)/모바일(390) 수동 시나리오(§6)로 확인해야 함.
+  특히 **선택카드 `:has()` 렌더**와 **모바일 2단 시트**를 실제 DOM 에서 눈으로 확인.
+- **다음 작업 = Phase 4 (문서 정리) + 몰 QA 반영.** 시안과 실제 렌더 차이가 나오면
+  custom_detail.css 의 `#totalProducts` 카드 규칙을 실제 마크업 기준으로 조정.
 
 ---
 
@@ -67,8 +69,8 @@ custom_detail.css 를 시안(PC/모바일) 기준으로 새로 작성한다.
 | 1-4 | `js/page.js` — 합계 표시를 `PickOption.rows()` 로, 행 판별 규칙 단일화 | ✅ 완료 |
 | 1-5 | 구조 정리 — 이벤트 위임 / 50줄 초과 함수 분리 / `freeShipGoal` 설정 이동 | ✅ 완료 |
 | 1-6 | `PickOption.diagnose()` 자가진단 강화 (6개 점검 ✅/❌) | ✅ 완료 |
-| 2 | `html/detail.html` 신규 작성 | ⏳ 진행 예정 |
-| 3 | `css/custom_detail.css` 신규 작성 | ⏳ |
+| 2 | `html/detail.html` 시안 재작성 (PC/모바일, 보호 DOM 병합, 탭 정적화, 5파일 로드) | ✅ 완료 |
+| 3 | `css/custom_detail.css` 재작성 (죽은 코드 제거, `#totalProducts` 카드화) | ✅ 완료 |
 | 4 | CLAUDE.md · cleanup.md · README.md · QA_CHECKLIST.md 정리 | ⏳ |
 
 > 1-1 ~ 1-4 는 **순수 이동**이며 로직을 바꾸지 않는다. 동작 변경은 1-5 부터.
@@ -86,10 +88,10 @@ custom_detail.css 를 시안(PC/모바일) 기준으로 새로 작성한다.
 | [js/pick_option.js](js/pick_option.js) | 골라담기 상태 + 렌더링 | 축소 예정 (현 890줄) |
 | [js/page.js](js/page.js) | 탭 · 모바일 시트 · 합계 표시 동기화 | 중복 제거 예정 |
 | [css/pick_option.css](css/pick_option.css) | 골라담기 UI 스타일 | 유지 · 토큰 파생 + 시안 차이만 수정 |
-| [css/custom_detail.css](css/custom_detail.css) | 페이지 전체 스타일 | **전량 재작성 예정** |
-| [html/detail.html](html/detail.html) | 스킨 템플릿 | **신규 작성 예정** |
-| [html/before_detail.html](html/before_detail.html) | 변경 전 참고본 | 유지 (업로드 안 함) |
-| [html/snippet_detail_pc.html](html/snippet_detail_pc.html) · [html/snippet_detail_mobile.html](html/snippet_detail_mobile.html) | 옵션 영역 이식 스니펫 | 로드 순서 5단계로 갱신 예정 |
+| [css/custom_detail.css](css/custom_detail.css) | 페이지 전체 스타일 | ✅ 재작성 완료 (죽은 코드 제거 + `#totalProducts` 카드화) |
+| [html/detail.html](html/detail.html) | 스킨 템플릿 | ✅ 시안 재작성 완료 (보호 DOM 병합 + 5파일 로드) |
+| [html/before_detail.html](html/before_detail.html) | 시안 구현 참고본(레이아웃 출처) | 유지 (업로드 안 함) |
+| [html/snippet_detail_pc.html](html/snippet_detail_pc.html) · [html/snippet_detail_mobile.html](html/snippet_detail_mobile.html) | 옵션 영역 이식 스니펫 | ✅ 5파일 로드 순서 갱신 완료 |
 
 **로드 순서 (변경 후)**
 
@@ -137,7 +139,7 @@ JS `/js/module/product/*.js`, 이미지만 파일업로더 `/web/upload/pick_opt
 
 | # | 이슈 | 상태 |
 | --- | --- | --- |
-| 1 | `main contents 클릭이 안되는 에러` (직전 커밋 499318b) — 닫힌 오버레이가 본문 클릭을 먹는 것으로 추정 | 미해결. Phase 3 에서 딤을 `.is-open` 단일 진실 소스로 재작성, Phase 1-6 에서 `elementFromPoint` 로 회귀 감지 |
+| 1 | `main contents 클릭이 안되는 에러` (직전 커밋 499318b) — 닫힌 오버레이가 본문 클릭을 먹음 | Phase 3 재작성으로 딤(`.pd-sheet-dim`)을 기본 `display:none` + `.is-open` 표시로 정리(PC 에서 `@media min-width:768`로 항상 숨김). `diagnose()` 의 `elementFromPoint` 점검으로 회귀 감시. **몰에서 최종 확인 필요** |
 | 2 | 시안 상단부(프로모션바·헤더·GNB)는 `layout.html` 소관이라 이번 범위 밖 | 별도 작업으로 분리 |
 | 3 | 시안에는 있으나 카페24 치환변수가 없는 문구(개당 단가, 쿠폰 배너, 오늘 N명) | 정적 마크업 + "관리자에서 교체" 주석으로 처리 |
 
