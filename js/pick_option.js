@@ -531,6 +531,57 @@
     }
 
     /* ============================================================
+     * 자가진단 점검 — diagnose() 가 몰 상세페이지 상태를 판정하는 근거.
+     * 각 항목을 ✅/❌ 로 반환합니다. 실패 항목의 "조치" 를 보고 대응합니다.
+     * ============================================================ */
+    function firstBuyButton() {
+      return U.findFirst(CFG.cafe24.buyButtons || []);
+    }
+    /* 화면 중앙 좌표에서 실제로 클릭되는 요소가 딤/오버레이인지(=본문 가림) */
+    function bodyClickBlocker() {
+      if (!document.elementFromPoint) return null;
+      var x = Math.floor((window.innerWidth || 0) / 2);
+      var y = Math.floor((window.innerHeight || 0) / 2);
+      var hit = null;
+      try { hit = document.elementFromPoint(x, y); } catch (e) { return null; }
+      if (!hit || !hit.closest) return null;
+      return hit.closest('.po-overlay, .pd-sheet-dim');
+    }
+    function healthChecks(insp) {
+      var out = [];
+      function add(item, ok, fix) {
+        out.push({ 점검: item, 상태: ok ? '✅' : '❌', 조치: ok ? '' : (fix || '') });
+      }
+      var NS = window.PickOption || {};
+      add('스크립트 로드 (util·bridge)', !!(NS.utils && NS.bridge),
+        'option_config → pick_util → cafe24_bridge → pick_option → page 순서/누락 확인');
+
+      /* CSS 로드: 우리가 렌더한 .po__head 배경색이 스타일 미적용 기본값이면 CSS 누락 */
+      var headEl = section.querySelector('.po__head');
+      var bg = headEl ? (window.getComputedStyle(headEl).backgroundColor || '') : '';
+      var cssLoaded = !!bg && bg !== 'transparent' && bg !== 'rgba(0, 0, 0, 0)';
+      add('CSS 로드 (pick_option.css)', cssLoaded,
+        '@css(/css/module/product/pick_option.css) 지시자 / 경로 확인');
+
+      var buyBtn = firstBuyButton();
+      add('구매 폼 래퍼 (module=product_detail)',
+        !!(buyBtn && buyBtn.closest && buyBtn.closest('[module="product_detail"]')),
+        '옵션·수량·구매버튼이 <div module="product_detail"> 안에 있어야 옵션값이 전송됩니다');
+
+      add('카페24 옵션 컨트롤 탐지', insp.mode !== 'none',
+        '기본 옵션 영역 존재 + 옵션값 "' + (LABELS[0] || '10개입') + '_1" 형태 등록 확인');
+
+      add('선택상품 목록 컨테이너', !!insp.rowsContainer,
+        '#totalProducts(및 행이 추가되는 마지막 tbody) 존재 확인 — 첫 담기 시 학습될 수도 있음');
+
+      var blocker = bodyClickBlocker();
+      add('본문 클릭 가능 (딤 미차단)', !blocker,
+        blocker ? ('닫힌 딤(' + (U.classOf(blocker) || '') + ')이 본문을 덮고 있습니다 — .is-open 없이 표시되지 않아야 함') : '');
+
+      return out;
+    }
+
+    /* ============================================================
      * PUBLIC API
      * ============================================================ */
     function getState() {
@@ -563,11 +614,14 @@
        * (행 판별 규칙이 pick_option 과 page.js 에 두 벌 존재하지 않게 함) */
       rows: function () { return bridge.rows(); },
 
-      /* 연동 상태 진단 — 콘솔에서 PickOption.diagnose() 실행 */
+      /* 연동 상태 진단 — 콘솔에서 PickOption.diagnose() 실행.
+       * 몰 상세페이지에서 한 번 실행하면 로드·연동·본문 클릭 상태를 ✅/❌ 로 판정합니다.
+       * (로컬 테스트를 두지 않으므로 이 진단이 이 프로젝트의 검증 수단입니다.) */
       diagnose: function () {
         var insp = bridge.inspect();
         var map = insp.optionValueMap;
         var classOf = insp.classOf;
+        var health = healthChecks(insp);
         var rows = [];
         Object.keys(map).forEach(function (base) {
           map[base].forEach(function (e) {
@@ -593,9 +647,12 @@
           info['조치'] = '기본 옵션 영역이 페이지에 있는지 + 옵션값이 "' +
             (LABELS[0] || '10개입') + '_1" 형태인지 확인하세요.';
         }
-        console.table && rows.length && console.table(rows);
+        if (console.table) {
+          console.table(health);
+          if (rows.length) console.table(rows);
+        }
         console.log(TAG + ' 진단 결과', info);
-        return info;
+        return { health: health, info: info, optionValues: map };
       }
     };
     Object.keys(API).forEach(function (k) { window.PickOption[k] = API[k]; });
