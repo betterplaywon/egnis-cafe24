@@ -1,6 +1,5 @@
 /* ============================================================
  * page.js — 상세 페이지 공통 동작 (표시 전용)
- *  - 탭 전환/스크롤 이동
  *  - 모바일 옵션 바텀시트 열기/닫기
  *  - 무료배송 진행바 · "총 n세트 / 총 n원" 표시 동기화
  *    (금액 계산은 카페24 값을 "읽기만" 하며 어떤 구매 로직도 대체하지 않음)
@@ -19,20 +18,7 @@
   var FREE_SHIP_GOAL = 40000; // 무료배송 기준 금액(원). 몰 정책에 맞게 수정
 
   U.ready(function () {
-    /* ---------- 1. 탭 ---------- */
-    var tabs = document.querySelectorAll('.pd-tabs__tab');
-    tabs.forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        tabs.forEach(function (t) { t.classList.remove('is-active'); });
-        tab.classList.add('is-active');
-        var target = document.querySelector(tab.getAttribute('data-target') || '');
-        if (target && typeof target.scrollIntoView === 'function') {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      });
-    });
-
-    /* ---------- 2. 모바일 옵션 바텀시트 ---------- */
+    /* ---------- 1. 모바일 옵션 바텀시트 ---------- */
     var sheet = document.getElementById('pdOptionSheet');
     var dim = document.querySelector('.pd-sheet-dim');
     var buybar = document.querySelector('.pd-buybar');
@@ -89,7 +75,7 @@
     });
     window.addEventListener('resize', function () { if (!isMobile()) closeSheet(); });
 
-    /* ---------- 3. 합계 / 무료배송 진행바 (표시 전용) ----------
+    /* ---------- 2. 합계 / 무료배송 진행바 (표시 전용) ----------
      * 카페24 선택상품 목록에서 세트 수와 금액을 "읽어서" 표시만 갱신.
      * 스킨에 카페24 자체 합계 요소가 있다면 data-cafe24-total 로 지정해
      * 그 텍스트를 우선 사용합니다. */
