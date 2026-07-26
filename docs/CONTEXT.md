@@ -3,18 +3,18 @@
 이 문서는 **지금 무엇을 왜 하고 있는지**를 추적합니다.
 새 세션을 시작하거나 작업을 이어받을 때 이 파일부터 읽습니다.
 
-- 단계별 리팩토링 상세 기록 → [REFACTOR.md](REFACTOR.md)
+- 단계별 리팩토링 상세 기록 → [refactor/](refactor/README.md)
 - 프로젝트 규칙 → [CLAUDE.md](CLAUDE.md)
 - 설치·설정 가이드 → [README.md](README.md)
 - 몰 검증 항목 → [QA_CHECKLIST.md](QA_CHECKLIST.md)
-- 몰 문제해결 로그(원인·조치·재확인 방지) → [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+- 몰 문제해결 로그(원인·조치·재확인 방지) → [troubleshooting/](troubleshooting/README.md)
 
 최종 갱신: 2026-07-26
 
 ## ▶ 지금 상태 / 다음 시작점 (새 세션은 여기부터)
 
-- **Phase 1~3 완료 + 몰 검증 진행 중.** 몰 이슈 상세는 [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
-- **모바일/반응형 작업 착수(이번 세션).** 상세: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) #H.
+- **Phase 1~3 완료 + 몰 검증 진행 중.** 몰 이슈 상세는 [troubleshooting/](troubleshooting/README.md).
+- **모바일/반응형 작업 착수(이번 세션).** 상세: [#H](troubleshooting/H-mobile-viewport.md).
   - **device toolbar 축소 = viewport 메타 부재 확정.** 콘솔 `meta[name=viewport]` → `undefined`.
     메타 없으면 모바일이 가상 뷰포트 ~980px 로 렌더 후 축소(창 리사이즈는 실제 폭이라 정상).
     → **조치: layout.html `<head>` 에 `<meta name="viewport" content="width=device-width, initial-scale=1.0">` 추가**
@@ -26,7 +26,7 @@
 - **담기 동작·옵션 렌더 정상 확인됨.** (옵션 미출력 근본원인 = 옵션 `<table>` 의
   `module="product_option"` 누락, 커밋 `6acfbe1` 로 해결. `html/before_detail.html` 은
   베이직 순정 참고본.)
-- **금액 계산 문제 해결됨 (이번 세션, 커밋 `ffcc412`).** [TROUBLESHOOTING.md](TROUBLESHOOTING.md) #E/#F.
+- **금액 계산 문제 해결됨 (이번 세션, 커밋 `ffcc412`).** [#E](troubleshooting/E-price-calculation.md)/[#F](troubleshooting/F-card-display.md).
   - **#E-1 총액 "0원" = 우리 코드 버그 → 수정 완료.** page.js 가 카페24 총액 요소를
     존재만 하면 신뢰했는데 독립 선택형+추가금액 구성에서 그 요소가 비어 있어(0) 항상 0.
     → 각 행 가격 셀(`td.right > span:not(.mileage)`) 합으로 계산, 카페24 총액은 0 아닐
@@ -41,7 +41,7 @@
       로 세로 스택**(절대배치라 flex `order` 무시). 해결 = ①`cafe24_bridge.js tagQuantity()`
       로 `.po-qty*` 클래스 직접 태깅 ②JS 로드를 `@js` 지시자로 바꿔 CDN 캐시 무효화(#G)
       ③`css/custom_detail.css .po-qty__btn{position:static!important}` 로 절대배치 상쇄.
-      **몰에서 `[− 1 +]` 정상 표시 검증 완료.** 상세: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) #F/#G.
+      **몰에서 `[− 1 +]` 정상 표시 검증 완료.** 상세: [#F](troubleshooting/F-card-display.md)/[#G](troubleshooting/G-js-cache.md).
 - **검증은 반드시 시크릿 창 · 로그아웃 · 스토어프론트 URL 직접 접속.**
   관리자에서 상품 클릭해 열면 poxo 오버레이(`#atl-ghost`)가 상세 DOM 을 오염시킴(#A).
 
@@ -85,7 +85,7 @@ custom_detail.css 를 시안(PC/모바일) 기준으로 새로 작성한다.
 | 선택한 옵션 UI | **실제 카페24 `<table>` 마크업**을 CSS 로 카드화 (DOM 삭제·이동 없음) | 목업이 아닌 실제 렌더 결과가 유일한 기준 |
 | 로컬 테스트 | `test/` · `preview.html` · `demo.html` **생성하지 않음** | 목업이 실제 스킨 DOM 과 갈라져 틀린 통과를 만들었음. 매 변경을 몰에 마이그레이션해 확인하는 워크플로 |
 | 검증 수단 | `PickOption.diagnose()` 를 실제 몰 DOM 자가진단으로 강화 | 업로드 파일이 늘지 않고, 목업이 아니라 진짜 스킨을 봄 |
-| 기록 | 리팩토링 내역은 REFACTOR.md 에 단계별 누적 | 무엇을 왜 옮겼는지 추적 |
+| 기록 | 리팩토링 내역은 refactor/ 에 단계별 누적 | 무엇을 왜 옮겼는지 추적 |
 
 ---
 
@@ -93,7 +93,7 @@ custom_detail.css 를 시안(PC/모바일) 기준으로 새로 작성한다.
 
 | Phase | 내용 | 상태 |
 | --- | --- | --- |
-| 0 | CONTEXT.md · REFACTOR.md 개설 | ✅ 완료 |
+| 0 | CONTEXT.md · refactor/ 개설 | ✅ 완료 |
 | 1-1 | `js/pick_util.js` — 공용 헬퍼 추출 (`ready`/`findFirst`/`fmt`/`money`/`parsePrice`/`el`/`escapeHtml`/`classOf`) | ✅ 완료 |
 | 1-2 | `js/cafe24_bridge.js` — 옵션값 파서·컨트롤 탐지·조작·행 관측·추가입력·구매버튼 판별 이동 | ✅ 완료 |
 | 1-3 | `js/pick_option.js` 축소 — 상태 + 렌더링만 (890→556줄, 1-2 와 함께 완료) | ✅ 완료 |
@@ -160,7 +160,7 @@ JS `/js/module/product/*.js`, 이미지만 파일업로더 `/web/upload/pick_opt
    - 30개입 2회 담기 → 소진 표시, 관심상품 버튼은 가드에 걸리지 않을 것
    - 모바일 2단 시트 (구매바 → 옵션 시트 → 맛 시트), 딤 클릭으로 닫힘
    - **시트를 닫은 뒤 본문 링크·탭이 정상 클릭되는지** (아래 열린 이슈 회귀 확인)
-4. 결과를 REFACTOR.md 에 기록. 실패는 숨기지 않는다.
+4. 결과를 refactor/ 에 기록. 실패는 숨기지 않는다.
 
 > 몰 업로드는 **과제용 테스트몰 한정**. 운영몰에는 어떤 변경도 적용하지 않는다.
 
@@ -173,7 +173,7 @@ JS `/js/module/product/*.js`, 이미지만 파일업로더 `/web/upload/pick_opt
 | 1 | `main contents 클릭이 안되는 에러` (직전 커밋 499318b) — 닫힌 오버레이가 본문 클릭을 먹음 | Phase 3 재작성으로 딤(`.pd-sheet-dim`)을 기본 `display:none` + `.is-open` 표시로 정리(PC 에서 `@media min-width:768`로 항상 숨김). `diagnose()` 의 `elementFromPoint` 점검으로 회귀 감시. **몰에서 최종 확인 필요** |
 | 2 | 시안 상단부(프로모션바·헤더·GNB)는 `layout.html` 소관이라 이번 범위 밖 + **viewport 메타 부재**(모바일 축소 원인, #H) | 별도 작업으로 분리. viewport 메타는 몰 layout.html `<head>` 에 직접 추가 필요 |
 | 3 | 시안에는 있으나 카페24 치환변수가 없는 문구(개당 단가, 쿠폰 배너, 오늘 N명) | 정적 마크업 + "관리자에서 교체" 주석으로 처리 |
-| 4 | ~~선택상품 수량 스테퍼 `[− 1 +]` 몰 적용 문제~~ **✅ 해결·검증 완료** | 근본원인 = 스킨이 화살표 `.up`/`.down` 을 `position:absolute`(`left:28px;top:0/12px`)로 세로 스택 → 절대배치라 flex `order` 무시. 해결 3단계: ①`cafe24_bridge.js tagQuantity()` 로 `.po-qty*` 클래스 직접 태깅 ②JS 로드를 `@js` 지시자로 전환해 CDN 캐시 무효화(#G) ③`.po-qty__btn{position:static!important}` 로 절대배치 상쇄. 몰에서 `[− 1 +]` 정상 표시 검증됨. 상세: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) #F/#G |
+| 4 | ~~선택상품 수량 스테퍼 `[− 1 +]` 몰 적용 문제~~ **✅ 해결·검증 완료** | 근본원인 = 스킨이 화살표 `.up`/`.down` 을 `position:absolute`(`left:28px;top:0/12px`)로 세로 스택 → 절대배치라 flex `order` 무시. 해결 3단계: ①`cafe24_bridge.js tagQuantity()` 로 `.po-qty*` 클래스 직접 태깅 ②JS 로드를 `@js` 지시자로 전환해 CDN 캐시 무효화(#G) ③`.po-qty__btn{position:static!important}` 로 절대배치 상쇄. 몰에서 `[− 1 +]` 정상 표시 검증됨. 상세: [#F](troubleshooting/F-card-display.md)/[#G](troubleshooting/G-js-cache.md) |
 
 ## 8. 사용자 요청 변경 이력
 
@@ -183,15 +183,15 @@ JS `/js/module/product/*.js`, 이미지만 파일업로더 `/web/upload/pick_opt
 - **금액 계산 오류 + 선택옵션 표시 정리** (2026-07-25, 커밋 `ffcc412`) — 추가 상품 담기 시
   ① 총액 "0원"(page.js 코드 버그) → 수정·검증 완료, ② 행 가격에 기본 판매가 중복 가산
   (관리자 옵션 추가금액 데이터) → 관리자에서 해결·검증 완료, ③ 행 표시의 `-`·`(+n원)`
-  텍스트 제거(cafe24_bridge.js tagRow) → 완료. 상세: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) #E/#F.
+  텍스트 제거(cafe24_bridge.js tagRow) → 완료. 상세: [#E](troubleshooting/E-price-calculation.md)/[#F](troubleshooting/F-card-display.md).
 - **수량 스테퍼 `[− 1 +]` 완성** (2026-07-25) — 선택상품 행 수량 컨트롤을 맛 선택
   스테퍼와 동일한 `[− 1 +]` 가로 배치로. 근본원인은 **스킨의 화살표 절대배치**(`position:
   absolute` → flex `order` 무시)였고, 해결 과정에서 **JS CDN 캐시 문제(#G)** 도 함께
   드러나 JS 로드를 `@js` 지시자로 전환. 최종: `tagQuantity()` 클래스 태깅 + `@js` 로드 +
-  `.po-qty__btn{position:static!important}`. **몰 검증 완료.** 상세: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) #F/#G.
+  `.po-qty__btn{position:static!important}`. **몰 검증 완료.** 상세: [#F](troubleshooting/F-card-display.md)/[#G](troubleshooting/G-js-cache.md).
 - **모바일/반응형 UI 재구성** (2026-07-26) — ① device toolbar 에서만 PC 가 축소돼 보이던
   원인 = **viewport 메타 부재**(콘솔 `meta[name=viewport]`→`undefined`) 확정, 조치는 몰
   layout.html `<head>` 메타 추가(범위 밖·몰 직접). ② 코드: 모바일에서 탭·상세설명 숨김 →
   정보 패널 이미지 직후 상승, 구매바 버튼 사이즈 조정, "오늘 N명"을 시트 밖 복제본으로
   닫힘 상태 노출(**PC 불변**). ③ 바로구매→시트 열림/시트 열림 시 3버튼 전환은 기존
-  구현으로 동작 확인. 상세: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) #H.
+  구현으로 동작 확인. 상세: [#H](troubleshooting/H-mobile-viewport.md).
