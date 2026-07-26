@@ -154,6 +154,11 @@
                 </div>
             </dl>
 
+            <!-- "오늘 N명" 모바일 전용 표시. 시트 안 원본(.pd-social)은 모바일에서
+                 시트와 함께 화면 밖으로 밀려 닫힘 상태에 보이지 않으므로, 정보 패널에
+                 복제본을 두고 PC 에서는 숨긴다(PC 레이아웃 불변). -->
+            <div class="pd-social pd-social--m"><span class="pd-social__coin">W</span> 오늘 <strong>N명</strong>이 구매했어요</div>
+
             <!-- 옵션 영역 — 모바일에서는 page.js 가 바텀시트로 동작시킵니다. -->
             <div id="pdOptionSheet" class="pd-sheet">
                 <button type="button" class="pd-sheet-handle" aria-label="옵션 닫기"></button>

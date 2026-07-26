@@ -264,6 +264,8 @@
   display: flex; align-items: center; justify-content: center; gap: 8px;
   height: 46px; font-size: 14px;
 }
+/* "오늘 N명" 모바일 전용 복제본 — PC 에서는 숨김(원본이 정보 패널 내 그대로 노출). */
+.pd-social--m { display: none; }
 .pd-social strong { font-weight: 800; }
 .pd-social__coin {
   width: 20px; height: 20px; border-radius: 50%; background: #ffb400;
@@ -335,8 +337,9 @@
   .path { padding: 12px 16px 0; font-size: 11px; }
   .pd__inner { display: block; }
   .pd-gallery { border-radius: 0; }
-  .pd-tabs { position: sticky; top: 0; background: #fff; z-index: 10; margin-top: 0; }
-  .pd-tabs__tab { font-size: 14px; padding: 14px 4px; }
+  /* 모바일: 탭·상세설명을 숨겨 상품 정보 패널(.pd__right)이 이미지 바로 아래로 올라오게 함.
+     .pd__left 에 남는 건 갤러리뿐이라, block 흐름상 .pd__right 가 이미지 직후에 옴. */
+  .pd-tabs, .pd-content { display: none; }
 
   /* 우측 패널 → 본문 아래로 흘려보내되, 옵션 영역은 시트로 분리 */
   .pd__right { position: static; flex: none; padding: 20px 16px 0; }
@@ -345,6 +348,10 @@
   .pd-price__amount { font-size: 26px; }
   .pd-actions { display: none; }             /* PC 버튼 숨김 → 하단 고정바 사용 */
 
+  /* "오늘 N명": 시트 안 원본은 숨기고(닫힘 시 시트째 사라짐) 정보 패널 복제본을 노출 */
+  #pdOptionSheet .pd-social { display: none; }
+  .pd-social--m { display: flex; }
+
   /* 하단 고정 구매바 */
   .pd-buybar {
     display: flex; gap: 10px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 10005;
@@ -352,18 +359,18 @@
     padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
   }
   .pd-buybar__cart {
-    flex: 1; height: 48px; border: 1px solid #ddd; border-radius: 10px; background: #fff;
-    display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; font-weight: 700;
+    flex: 1; height: 52px; border: 1px solid #ddd; border-radius: 12px; background: #fff;
+    display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 15px; font-weight: 700;
   }
   .pd-buybar__buy {
-    flex: 1.4; height: 48px; border-radius: 10px; background: var(--pg-primary); color: #fff;
-    font-size: 15px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+    flex: 1.5; height: 52px; border-radius: 12px; background: var(--pg-primary); color: #fff;
+    font-size: 16px; font-weight: 800; display: flex; align-items: center; justify-content: center;
   }
   /* 시트 열림 상태에서는 Npay 포함 3버튼형 (시안: 장바구니 아이콘 · N pay · 바로구매) */
   .pd-buybar--sheet .pd-buybar__cart { flex: 0 0 52px; font-size: 18px; }
   .pd-buybar--sheet .pd-buybar__cart span { display: none; }
   .pd-buybar--sheet .pd-buybar__npay {
-    flex: 1; height: 48px; border-radius: 10px; background: #111; color: #fff;
+    flex: 1; height: 52px; border-radius: 12px; background: #111; color: #fff;
     display: flex; align-items: center; justify-content: center; font-weight: 800;
   }
   .pd-buybar__npay { display: none; }

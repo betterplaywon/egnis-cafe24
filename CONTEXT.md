@@ -9,11 +9,20 @@
 - 몰 검증 항목 → [QA_CHECKLIST.md](QA_CHECKLIST.md)
 - 몰 문제해결 로그(원인·조치·재확인 방지) → [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
-최종 갱신: 2026-07-25
+최종 갱신: 2026-07-26
 
 ## ▶ 지금 상태 / 다음 시작점 (새 세션은 여기부터)
 
 - **Phase 1~3 완료 + 몰 검증 진행 중.** 몰 이슈 상세는 [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+- **모바일/반응형 작업 착수(이번 세션).** 상세: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) #H.
+  - **device toolbar 축소 = viewport 메타 부재 확정.** 콘솔 `meta[name=viewport]` → `undefined`.
+    메타 없으면 모바일이 가상 뷰포트 ~980px 로 렌더 후 축소(창 리사이즈는 실제 폭이라 정상).
+    → **조치: layout.html `<head>` 에 `<meta name="viewport" content="width=device-width, initial-scale=1.0">` 추가**
+    (layout.html 은 저장소 밖·몰 전용, 상단부는 범위 밖 §7-2 → 몰에서 직접 추가·판정 필요).
+  - **모바일 레이아웃 재구성(코드 완료)**: 탭·상세설명 숨김 → 정보 패널 이미지 직후 상승,
+    구매바 버튼 사이즈 조정, "오늘 N명" 시트 밖 복제본(`.pd-social--m`)으로 닫힘 상태 노출
+    (**PC 레이아웃 불변** — 복제본은 PC 에서 `display:none`). 요구 "바로구매→시트 열림 /
+    시트 열림 시 3버튼 전환"은 기존 구현으로 이미 동작.
 - **담기 동작·옵션 렌더 정상 확인됨.** (옵션 미출력 근본원인 = 옵션 `<table>` 의
   `module="product_option"` 누락, 커밋 `6acfbe1` 로 해결. `html/before_detail.html` 은
   베이직 순정 참고본.)
@@ -162,7 +171,7 @@ JS `/js/module/product/*.js`, 이미지만 파일업로더 `/web/upload/pick_opt
 | # | 이슈 | 상태 |
 | --- | --- | --- |
 | 1 | `main contents 클릭이 안되는 에러` (직전 커밋 499318b) — 닫힌 오버레이가 본문 클릭을 먹음 | Phase 3 재작성으로 딤(`.pd-sheet-dim`)을 기본 `display:none` + `.is-open` 표시로 정리(PC 에서 `@media min-width:768`로 항상 숨김). `diagnose()` 의 `elementFromPoint` 점검으로 회귀 감시. **몰에서 최종 확인 필요** |
-| 2 | 시안 상단부(프로모션바·헤더·GNB)는 `layout.html` 소관이라 이번 범위 밖 | 별도 작업으로 분리 |
+| 2 | 시안 상단부(프로모션바·헤더·GNB)는 `layout.html` 소관이라 이번 범위 밖 + **viewport 메타 부재**(모바일 축소 원인, #H) | 별도 작업으로 분리. viewport 메타는 몰 layout.html `<head>` 에 직접 추가 필요 |
 | 3 | 시안에는 있으나 카페24 치환변수가 없는 문구(개당 단가, 쿠폰 배너, 오늘 N명) | 정적 마크업 + "관리자에서 교체" 주석으로 처리 |
 | 4 | ~~선택상품 수량 스테퍼 `[− 1 +]` 몰 적용 문제~~ **✅ 해결·검증 완료** | 근본원인 = 스킨이 화살표 `.up`/`.down` 을 `position:absolute`(`left:28px;top:0/12px`)로 세로 스택 → 절대배치라 flex `order` 무시. 해결 3단계: ①`cafe24_bridge.js tagQuantity()` 로 `.po-qty*` 클래스 직접 태깅 ②JS 로드를 `@js` 지시자로 전환해 CDN 캐시 무효화(#G) ③`.po-qty__btn{position:static!important}` 로 절대배치 상쇄. 몰에서 `[− 1 +]` 정상 표시 검증됨. 상세: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) #F/#G |
 
@@ -180,3 +189,9 @@ JS `/js/module/product/*.js`, 이미지만 파일업로더 `/web/upload/pick_opt
   absolute` → flex `order` 무시)였고, 해결 과정에서 **JS CDN 캐시 문제(#G)** 도 함께
   드러나 JS 로드를 `@js` 지시자로 전환. 최종: `tagQuantity()` 클래스 태깅 + `@js` 로드 +
   `.po-qty__btn{position:static!important}`. **몰 검증 완료.** 상세: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) #F/#G.
+- **모바일/반응형 UI 재구성** (2026-07-26) — ① device toolbar 에서만 PC 가 축소돼 보이던
+  원인 = **viewport 메타 부재**(콘솔 `meta[name=viewport]`→`undefined`) 확정, 조치는 몰
+  layout.html `<head>` 메타 추가(범위 밖·몰 직접). ② 코드: 모바일에서 탭·상세설명 숨김 →
+  정보 패널 이미지 직후 상승, 구매바 버튼 사이즈 조정, "오늘 N명"을 시트 밖 복제본으로
+  닫힘 상태 노출(**PC 불변**). ③ 바로구매→시트 열림/시트 열림 시 3버튼 전환은 기존
+  구현으로 동작 확인. 상세: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) #H.
