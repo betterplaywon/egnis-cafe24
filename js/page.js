@@ -36,10 +36,19 @@
     }
     function closeSheet() {
       if (!sheet) return;
+      var wasOpen = sheet.classList.contains('is-open');
       sheet.classList.remove('is-open');
       if (dim) { dim.classList.remove('is-open'); dim.hidden = true; }
       if (buybar) buybar.classList.remove('pd-buybar--sheet');
       document.body.classList.remove('pd-sheet-lock');
+      /* 옵션 시트가 "실제로 열려 있던" 경우에만 그 위의 맛 선택 시트를 함께 정리합니다.
+       * (맛 시트를 열어 둔 채 바깥 시트를 닫으면 po-lock 이 남아 본문 스크롤이 잠긴 채
+       *  풀리지 않던 문제 방지) PC 는 이 시트를 열지 않아 wasOpen=false → 영향 없음.
+       *  특히 resize 시 !isMobile 이면 closeSheet 가 호출되므로, 이 가드로 PC 인라인
+       *  패널이 리사이즈만으로 닫히거나 선택이 초기화되지 않게 합니다. */
+      if (wasOpen && window.PickOption && typeof window.PickOption.reset === 'function') {
+        window.PickOption.reset();
+      }
     }
     window.PDSheet = { open: openSheet, close: closeSheet };
 

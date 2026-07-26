@@ -157,7 +157,31 @@
     overlay.hidden = true;
     body.appendChild(panelWrap);
     root.appendChild(overlay);
+    /* 시트 모드 전용 호스트 — 바텀시트는 body 직속으로 옮겨 붙입니다.
+     * 옵션 시트(#pdOptionSheet)가 transform 을 가지면 그 자식의 position:fixed 가
+     * 뷰포트가 아니라 시트 박스를 기준으로 잡혀, 맛 시트가 잘리거나(위가 안 보임)
+     * 높이가 틀어집니다. body 직속으로 올려 이 문제를 없앱니다.
+     * .po 클래스를 줘 .po 스코프 스타일(.po .po-panel__complete 등)을 유지합니다. */
+    var sheetHost = null;   // 시트 모드 진입 시에만 생성 (PC 는 만들지 않음 → DOM 불변)
+    var panelHome = body;   // 인라인(데스크톱) 시 panelWrap 이 돌아갈 원래 부모
     document.documentElement.style.setProperty('--po-bottom-offset', (CFG.mobile.bottomOffset || 0) + 'px');
+
+    /* 패널·딤을 현재 모드에 맞는 부모로 이동 (시트: body 직속 / 인라인: 원래 자리).
+     * PC(useSheet 항상 false)에서는 sheet 인자가 늘 false 라 sheetHost 를 만들지 않고
+     * panelWrap·overlay 를 원래 부모에 그대로 둡니다 → PC 레이아웃 완전 불변. */
+    function mountForMode(sheet) {
+      if (sheet) {
+        if (!sheetHost) {
+          sheetHost = el('div', 'po po-sheet-host');
+          document.body.appendChild(sheetHost);
+        }
+        if (overlay.parentNode !== sheetHost) sheetHost.appendChild(overlay);
+        if (panelWrap.parentNode !== sheetHost) sheetHost.appendChild(panelWrap);
+      } else {
+        if (overlay.parentNode !== root) root.appendChild(overlay);
+        if (panelWrap.parentNode !== panelHome) panelHome.appendChild(panelWrap);
+      }
+    }
 
     overlay.addEventListener('click', closePanel);
 
@@ -174,6 +198,7 @@
     }
     window.addEventListener('resize', function () {
       var asSheet = useSheet() && !panelWrap.hidden;
+      mountForMode(asSheet);
       panelWrap.classList.toggle('po-panel--sheet', asSheet);
       setOverlay(asSheet);
       /* 시트 모드가 아니게 되면 body 스크롤 잠금도 반드시 함께 해제 (QA 9) */
@@ -316,8 +341,9 @@
         cardEls[k].querySelector('.po-card__btn').setAttribute('aria-checked', String(active));
       });
       buildPanel(countCfg);
-      panelWrap.hidden = false;
       var sheet = useSheet();
+      mountForMode(sheet);
+      panelWrap.hidden = false;
       setOverlay(sheet);
       if (sheet) document.body.classList.add('po-lock');
     }
@@ -325,6 +351,7 @@
       panelWrap.hidden = true;
       setOverlay(false);
       document.body.classList.remove('po-lock');
+      mountForMode(false);   /* 인라인 홈 복귀 (재열기·데스크톱 전환 대비) */
     }
 
     function onCardClick(countCfg) {

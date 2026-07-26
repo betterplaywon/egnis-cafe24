@@ -181,8 +181,10 @@
 /* 맛 패널 딤 — 열림 상태(.is-open)일 때만 화면을 덮습니다.
  * hidden 속성만으로 막으면 스킨 CSS 가 UA 기본 display:none 을 덮어쓸 때
  * 전체 화면이 가려져 클릭이 막히므로 pointer-events 로 2차 차단합니다. */
+/* z-index 는 옵션 시트(#pdOptionSheet .pd-sheet=10002, 딤=10001, 구매바=10005)
+ * 위에 떠야 하므로 그보다 높게 둡니다. 맛 시트는 옵션 시트 위에 겹쳐 열립니다. */
 .po-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 10000;
+  position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 10010;
   display: none; pointer-events: none;
 }
 .po-overlay.is-open { display: block; pointer-events: auto; }
@@ -202,7 +204,7 @@ body.po-lock { overflow: hidden; }
   /* 바텀시트 모드 (config.mobile.mode === 'sheet') */
   .po-panel--sheet {
     position: fixed; left: 0; right: 0; bottom: 0; top: auto; margin: 0;
-    border: 0; border-radius: 16px 16px 0 0; z-index: 10001;
+    border: 0; border-radius: 16px 16px 0 0; z-index: 10011;
     max-height: 78vh; display: flex; flex-direction: column;
     /* 하단 고정 구매바와 겹치지 않도록 안전 영역 확보 */
     padding-bottom: calc(env(safe-area-inset-bottom, 0px));
@@ -212,7 +214,9 @@ body.po-lock { overflow: hidden; }
     display: block; position: absolute; left: 50%; top: -12px; transform: translateX(-50%);
     width: 44px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.9);
   }
-  .po-panel--sheet .po-flavors { flex: 1 1 auto; max-height: none; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  /* flex-grow 0: 맛이 적으면 목록이 내용 높이만 차지(78vh 로 늘어나지 않음 → 하단 여백 방지),
+     많으면 shrink 로 줄며 스크롤됩니다. 시트 전체 높이는 max-height:78vh 로만 제한합니다. */
+  .po-panel--sheet .po-flavors { flex: 0 1 auto; max-height: none; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .po-panel--sheet .po-panel__foot { padding-bottom: 12px; }
 }
 
