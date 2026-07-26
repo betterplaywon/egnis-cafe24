@@ -1,3 +1,8 @@
+<!-- 반응형 viewport — 이 몰 상품상세는 layout 이 적용되지 않아 layout.html 의
+     head 가 렌더되지 않는다. detail.html 상단의 meta/style 은 카페24가 <head> 로
+     끌어올리므로(hoisting) viewport 를 여기 둔다. 자세한 경위: docs/troubleshooting/H-mobile-viewport.md -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <!--
  [카페24 스킨] 상품 상세 detail.html — 골라담기 통합본 (시안 기준)
  ------------------------------------------------------------------

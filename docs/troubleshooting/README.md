@@ -22,7 +22,7 @@
 | E | 추가 상품 담기 후 금액 계산 오류 | E-1 ✅ 코드 수정 / E-2 ⚠️ 관리자 데이터 | [E-price-calculation.md](E-price-calculation.md) |
 | F | 선택 옵션 카드 표시 정리 (구분자·추가금액·수량 스테퍼) | ✅ 수정 완료 | [F-card-display.md](F-card-display.md) |
 | G | JS 수정이 몰에 반영 안 됨 — CDN 캐싱 | ✅ 원인 확정·조치 | [G-js-cache.md](G-js-cache.md) |
-| H | 모바일 UI 가 device toolbar 에서만 축소 — viewport 메타 부재 | ✅ 원인 확정 | [H-mobile-viewport.md](H-mobile-viewport.md) |
+| H | 모바일 UI 가 device toolbar 에서만 축소 — viewport 메타 부재 | ✅ 해결(detail.html 상단 배치) | [H-mobile-viewport.md](H-mobile-viewport.md) |
 
 ---
 
@@ -90,3 +90,5 @@ PickOption.diagnose()
 - `css/custom_detail.css` (#F 수량 스테퍼 `[− 1 +]`: `.po-qty__btn{position:static!important}` 로 스킨 절대배치 상쇄)
 - `html/detail.html` · `html/snippet_detail_pc.html` · `html/snippet_detail_mobile.html`
   (#G JS 로드를 `@js` 지시자로 전환 — 캐시 자동 무효화, 수동 버전 갱신 불필요)
+- `html/detail.html` (#H 최상단에 `<meta name="viewport">` 추가 — layout 미적용
+  대응, head 로 hoisting)
