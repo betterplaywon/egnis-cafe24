@@ -24,26 +24,6 @@
 전체 페이지 스킨의 로드 순서:
 `(스킨 원본)detail.css → custom_detail.css → pick_option.css → (본문) → option_config.js → pick_option.js → page.js`
 
-### 자동 테스트
-
-```bash
-npm install jsdom           # 최초 1회
-node test/test.js             # 셀렉트형 연동 (22건)
-node test/test-textbutton.js  # 텍스트버튼형 연동 · QA 2/3/4/7 (23건)
-node test/test-basicskin.js   # ★ 카페24 기본 스킨 렌더링 결과 기준 연동 (23건)
-node test/test-page.js        # 페이지 레이아웃·합계 표시 (18건)
-```
-
-`test-basicskin.js` 는 기본 스킨의 까다로운 지점을 그대로 재현합니다 —
-`#totalProducts` 의 다중 `<tbody>`(행은 마지막에 추가), `<p class="product">상품명<br><span>옵션</span></p>`
-행 구조, `img.option_box_del` 삭제 버튼, 바로구매·장바구니·관심상품이 같은 클래스를 쓰는 문제.
-
-모바일 동작(전체 스킨 기준): 하단 고정 구매바의 장바구니/바로구매 버튼은
-옵션 시트(`#pdOptionSheet`)가 닫혀 있으면 먼저 시트를 열고, 열려 있으면
-아무 것도 가로채지 않아 카페24 기본 동작이 그대로 실행됩니다.
-`page.js` 의 합계·무료배송 표시는 카페24 선택상품 목록/합계 요소를 읽기만 하며,
-카페24 자체 합계 요소가 있으면 `data-cafe24-total` 속성을 부여해 그 값을 우선 사용합니다.
-
 ## 1. 카페24 관리자 사전 설정 (필수)
 
 1. **옵션 등록** — 상품에 필수 옵션 1개(예: 옵션명 `개입수`)를 만들고, 옵션값을
