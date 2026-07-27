@@ -5,6 +5,10 @@
 옵션을 대신 "조작"하는 역할만 합니다 — 텍스트버튼형이면 해당 버튼을 클릭하고,
 셀렉트형이면 `<select>` 값을 바꾸고 `change` 를 발생시킵니다.
 
+# 구현 내용을 확인할 수 있는 URL
+
+https://egnisgo.cafe24.com/product/detail.html?product_no=11
+
 ## 파일 구성
 
 | 파일 | 역할 | 수정 대상 |
