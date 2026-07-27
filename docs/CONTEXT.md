@@ -4,8 +4,9 @@
 새 세션을 시작하거나 작업을 이어받을 때 이 파일부터 읽습니다.
 
 - 단계별 리팩토링 상세 기록 → [refactor/](refactor/README.md)
-- 프로젝트 규칙 → [CLAUDE.md](CLAUDE.md)
-- 설치·설정 가이드 → [README.md](README.md)
+- 프로젝트 규칙 → [CLAUDE.md](../CLAUDE.md)
+- 구현 방식 설명 → [README.md](../README.md)
+- 설치 절차 → [INSTALL.md](INSTALL.md), 정적 리소스 경로 규칙 → [PATH_RULES.md](PATH_RULES.md)
 - 몰 검증 항목 → [QA_CHECKLIST.md](QA_CHECKLIST.md)
 - 몰 문제해결 로그(원인·조치·재확인 방지) → [troubleshooting/](troubleshooting/README.md)
 
