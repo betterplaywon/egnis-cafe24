@@ -47,16 +47,24 @@ git diff --name-only && git status --short
 
 ## 4. 안전 확인
 
-리팩터링은 **동작을 바꾸지 않아야** 합니다. 끝나면 반드시:
+리팩터링은 **동작을 바꾸지 않아야** 합니다. 이 프로젝트에는 로컬 자동 테스트가
+없으므로(사유: [docs/CONTEXT.md](../../../docs/CONTEXT.md)) `git diff` 리뷰가
+유일한 안전망입니다. 끝나면 반드시:
 
 ```bash
-node test/test.js
-node test/test-textbutton.js
-node test/test-basicskin.js
-node test/test-page.js
+node --check js/pick_util.js
+node --check js/cafe24_bridge.js
+node --check js/pick_option.js
+node --check js/page.js
+git diff                          # 동작이 바뀐 줄이 섞이지 않았는지 직접 확인
 ```
 
-4개 모두 통과해야 완료입니다. 실패하면 결과를 그대로 보고합니다.
+- 순수 이동(코드를 다른 파일로 옮기기)과 동작 변경을 **같은 커밋에 섞지 않습니다.**
+  섞이면 diff 로 회귀를 잡을 수 없습니다.
+- 그다음 테스트몰에 올려 `PickOption.diagnose()` 6개 점검이 전부 ✅ 인지,
+  담기·중복 방지·소진 처리가 그대로인지 확인합니다.
+
+실패하면 결과를 그대로 보고합니다.
 
 ## 5. 마무리
 

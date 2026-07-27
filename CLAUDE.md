@@ -11,15 +11,17 @@
 | 경로 | 역할 |
 | --- | --- |
 | [js/option_config.js](js/option_config.js) | 옵션 UI 외부 설정값 (개입수·맛·문구·셀렉터·모바일 동작) |
-| [js/pick_option.js](js/pick_option.js) | 골라담기 렌더링 + 카페24 연동 로직 |
+| [js/pick_util.js](js/pick_util.js) | 공용 헬퍼 (셀렉터 탐색·치환·DOM 생성) |
+| [js/cafe24_bridge.js](js/cafe24_bridge.js) | 카페24 연동 전담 (옵션값 파싱·컨트롤 조작·행 관측) |
+| [js/pick_option.js](js/pick_option.js) | 골라담기 상태 + 렌더링 |
 | [js/page.js](js/page.js) | 탭 전환, 모바일 바텀시트, 합계 표시 동기화 (읽기 전용) |
 | [css/pick_option.css](css/pick_option.css) | 옵션 UI 스타일 |
 | [css/custom_detail.css](css/custom_detail.css) | 페이지 전체 스타일 |
 | [html/detail.html](html/detail.html) | 전체 스킨 템플릿 (카페24 모듈 보존) |
 | [html/snippet_detail_pc.html](html/snippet_detail_pc.html), [html/snippet_detail_mobile.html](html/snippet_detail_mobile.html) | 옵션 영역만 이식하는 삽입 스니펫 |
-| [test/](test/) | jsdom 자동 테스트 (몰 업로드 금지) |
 
-로드 순서는 반드시 `option_config.js → pick_option.js → page.js` 입니다.
+로드 순서는 반드시 `option_config.js → pick_util.js → cafe24_bridge.js →
+pick_option.js → page.js` 입니다 (5개 전부).
 
 ## 작업 원칙
 
@@ -65,7 +67,7 @@
 ### 5. 민감 정보는 제출물에 포함하지 않습니다
 
 - 카페24 계정 정보, 관리자 비밀번호, API 키/시크릿, 액세스 토큰, 몰 ID 등
-  민감 정보를 코드·주석·문서·커밋 메시지·테스트 픽스처에 남기지 않습니다.
+  민감 정보를 코드·주석·문서·커밋 메시지에 남기지 않습니다.
 - 필요한 경우 `YOUR_MALL_ID` 같은 플레이스홀더를 사용합니다.
 - 커밋 전 새로 추가된 값 중 민감 정보가 없는지 확인합니다.
 
@@ -76,7 +78,8 @@
 - 스킨마다 다른 DOM에 대응하도록, 하드코딩된 셀렉터 대신 설정의 후보 셀렉터
   배열(첫 번째로 존재하는 것을 사용)을 유지합니다.
 - 기본 스킨의 까다로운 지점(다중 `<tbody>`, 관심상품 버튼이 장바구니와 같은 클래스를
-  쓰는 문제 등)은 우회하지 말고 정면으로 처리하고 테스트로 고정합니다.
+  쓰는 문제 등)은 우회하지 말고 정면으로 처리하고, **왜 그렇게 했는지를 코드 주석에
+  남깁니다.** 자동 테스트가 없으므로 이 주석이 회귀를 막는 유일한 장치입니다.
 
 ## 코드 스타일
 
@@ -101,15 +104,27 @@
 
 `js/` 아래 코드를 수정한 작업은 **완료 보고 전에 `cleanup-temp` 를 거칩니다.**
 
-## 테스트
+## 검증
+
+**로컬 자동 테스트는 두지 않습니다.** 목업 DOM 기반 jsdom 테스트를 운용했다가,
+목업이 실제 카페24 스킨의 렌더 결과와 갈라져 "테스트는 통과하는데 몰에서는
+동작하지 않는" 상태를 만들어 제거했습니다. `test/`, `preview.html`, `demo.html`
+을 **새로 만들지 않습니다** (경위: [docs/CONTEXT.md](docs/CONTEXT.md)).
+
+`js/` 를 수정했다면 다음 순서로 확인하고 결과를 그대로 보고합니다.
+실패를 숨기지 않습니다.
 
 ```bash
-npm install jsdom             # 최초 1회
-node test/test.js             # 셀렉트형 연동
-node test/test-textbutton.js  # 텍스트버튼형 연동
-node test/test-basicskin.js   # 카페24 기본 스킨 렌더링 기준 연동
-node test/test-page.js        # 페이지 레이아웃·합계 표시
+node --check js/pick_option.js   # 문법 확인 (수정한 파일 전부)
+git diff                         # 자동 테스트가 없으므로 diff 리뷰가 안전망
 ```
 
-`js/pick_option.js` 나 `js/page.js` 를 수정했다면 위 4개를 모두 실행하고
-결과를 그대로 보고합니다. 실패를 숨기지 않습니다.
+그다음 변경분을 테스트몰에 업로드하고 상세페이지 콘솔에서 확인합니다.
+
+```js
+PickOption.diagnose()   // 로드·연동·목록 컨테이너·본문 클릭을 ✅/❌ 로 판정
+```
+
+`diagnose()` 의 6개 점검이 전부 ✅ 여야 하며, 여기에 더해 실제로 담기·중복
+방지·소진 처리·구매 흐름을 화면에서 조작해 확인합니다
+(항목: [QA_CHECKLIST.md](QA_CHECKLIST.md)).

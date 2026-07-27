@@ -7,7 +7,7 @@
 - 프로젝트 규칙 → [CLAUDE.md](../CLAUDE.md)
 - 구현 방식 설명 → [README.md](../README.md)
 - 설치 절차 → [INSTALL.md](INSTALL.md), 정적 리소스 경로 규칙 → [PATH_RULES.md](PATH_RULES.md)
-- 몰 검증 항목 → [QA_CHECKLIST.md](QA_CHECKLIST.md)
+- 몰 검증 항목 → [QA_CHECKLIST.md](../QA_CHECKLIST.md)
 - 몰 문제해결 로그(원인·조치·재확인 방지) → [troubleshooting/](troubleshooting/README.md)
 
 최종 갱신: 2026-07-26
